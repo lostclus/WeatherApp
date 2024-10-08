@@ -20,12 +20,14 @@ import { CONFIG } from 'src/config-global';
 import { Iconify } from 'src/components/iconify';
 
 import { useAuth } from "src/auth/auth-provider";
+import { useAccount } from "src/auth/account-provider";
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();
   const { setToken } = useAuth();
+  const { setAccount } = useAccount();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -53,8 +55,13 @@ export function SignInView() {
       )
       .then(
 	(response) => {
-	  const token: string = response.data.access as string;
+	  const token = response.data.access as string;
+	  const account = {
+	    user_id: 1,
+	    email: response.data.email as string,
+	  };
 	  setToken(token);
+	  setAccount(account);
 	  router.push('/')
 	}
       )
@@ -70,7 +77,7 @@ export function SignInView() {
 	}
       );
     }
-  }, [router, email, password, setErrors, setToken]);
+  }, [router, email, password, setErrors, setToken, setAccount]);
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">

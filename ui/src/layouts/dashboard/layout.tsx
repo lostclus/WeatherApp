@@ -4,11 +4,12 @@ import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 
 import { Iconify } from 'src/components/iconify';
 
-import { useAuth } from "src/auth/auth-provider";
+import { useAccount } from "src/auth/account-provider";
 
 import { Main } from './main';
 import { layoutClasses } from '../classes';
@@ -31,7 +32,7 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
-  const { token } = useAuth();
+  const { account } = useAccount();
 
   const [navOpen, setNavOpen] = useState(false);
 
@@ -74,9 +75,10 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 />
               </>
             ),
-            rightArea: (token) ? (
+            rightArea: (account) ? (
               <Box gap={1} display="flex" alignItems="center">
                 <AccountPopover
+		  account={account}
                   data={[
                     {
                       label: 'Home',
@@ -96,7 +98,11 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                   ]}
                 />
               </Box>
-            ) : '',
+            ) : (
+              <Box gap={1} display="flex" alignItems="center">
+	        <Button href="/sign-in">Sign-in</Button>
+              </Box>
+	    ),
           }}
         />
       }
