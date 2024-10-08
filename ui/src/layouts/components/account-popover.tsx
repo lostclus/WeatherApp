@@ -1,4 +1,4 @@
-import type { Account } from 'src/auth/account-provider';
+import type { UserInfo } from 'src/auth/auth-provider';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { useState, useCallback } from 'react';
@@ -16,12 +16,11 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { useAuth } from 'src/auth/auth-provider';
-import { useAccount } from 'src/auth/account-provider';
 
 // ----------------------------------------------------------------------
 
 export type AccountPopoverProps = IconButtonProps & {
-  account: Account,
+  user: UserInfo,
   data?: {
     label: string;
     href: string;
@@ -30,10 +29,9 @@ export type AccountPopoverProps = IconButtonProps & {
   }[];
 };
 
-export function AccountPopover({ account, data = [], sx, ...other }: AccountPopoverProps) {
+export function AccountPopover({ user, data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-  const { setToken } = useAuth();
-  const { setAccount } = useAccount();
+  const { dropAuthenticated } = useAuth();
 
   const pathname = usePathname();
 
@@ -69,8 +67,8 @@ export function AccountPopover({ account, data = [], sx, ...other }: AccountPopo
         }}
         {...other}
       >
-        <Avatar alt={account.email} sx={{ width: 1, height: 1 }}>
-          {account.email.charAt(0).toUpperCase()}
+        <Avatar alt={user.email} sx={{ width: 1, height: 1 }}>
+          {user.email.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -88,7 +86,7 @@ export function AccountPopover({ account, data = [], sx, ...other }: AccountPopo
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.email}
+            {user.email}
           </Typography>
         </Box>
 
@@ -135,7 +133,7 @@ export function AccountPopover({ account, data = [], sx, ...other }: AccountPopo
 	    color="error"
 	    size="medium"
 	    variant="text"
-	    onClick={() => {setToken(null); setAccount(null);}}
+	    onClick={() => {dropAuthenticated()}}
 	   >
             Logout
           </Button>

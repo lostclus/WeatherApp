@@ -9,7 +9,7 @@ import { useTheme } from '@mui/material/styles';
 
 import { Iconify } from 'src/components/iconify';
 
-import { useAccount } from "src/auth/account-provider";
+import { useAuth } from "src/auth/auth-provider";
 
 import { Main } from './main';
 import { layoutClasses } from '../classes';
@@ -32,7 +32,7 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
-  const { account } = useAccount();
+  const { user } = useAuth();
 
   const [navOpen, setNavOpen] = useState(false);
 
@@ -75,10 +75,10 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 />
               </>
             ),
-            rightArea: (account) ? (
+            rightArea: (user) ? (
               <Box gap={1} display="flex" alignItems="center">
                 <AccountPopover
-		  account={account}
+		  user={user}
                   data={[
                     {
                       label: 'Home',

@@ -1,46 +1,86 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { useMemo, useState, useEffect, useContext, createContext } from "react";
 
-type Token = string | null;
-type AuthData = { token: Token, setToken: (newToken: Token) => void };
-
-const noAuth : AuthData = {
-  token: null,
-  setToken: (newToken: Token) => {},
+export type AuthResponse = {
+  access: string,
+  refresh: string,
+  email: string,
 };
 
-const AuthContext = createContext<AuthData>(noAuth);
+export type UserInfo = {
+  id: string,
+  email: string,
+}
+
+type AuthStore = {
+  token: {
+    access: string,
+    refresh: string,
+  } | null,
+  user: UserInfo | null,
+}
+
+type AuthCallbackInfo = {
+  setAuthenticated: (response: AuthResponse) => void,
+  dropAuthenticated: () => void,
+};
+
+export type AuthInfo = AuthStore & AuthCallbackInfo;
+
+const nullAuth: AuthInfo = {
+  token: null,
+  user: null,
+  setAuthenticated: (response: AuthResponse): void => {},
+  dropAuthenticated: (): void => {},
+};
+
+const AuthContext = createContext<AuthInfo>(nullAuth);
 
 type Props = {
   children: React.ReactNode;
 };
 
 export function AuthProvider({ children }: Props) {
-  // State to hold the authentication token
-  const [token, setToken_] = useState(localStorage.getItem("token"));
+  const [rawAuth, setRawAuth] = useState(localStorage.getItem("auth"));
+  const store = (rawAuth) ? JSON.parse(rawAuth) : null;
 
-  // Function to set the authentication token
-  const setToken = (newToken: string | null) => {
-    setToken_(newToken);
+  const setAuthenticated = (response: AuthResponse): void => {
+    const tokenData = jwtDecode<{ [index: string]: any}>(response.access);
+    const newStore: AuthStore = {
+      token: {
+	access: response.access,
+	refresh: response.refresh,
+      },
+      user: {
+	id: tokenData.user_id as string,
+	email: response.email,
+      }
+    };
+    setRawAuth(JSON.stringify(newStore));
   };
 
+  const dropAuthenticated = (): void => {
+    setRawAuth(null);
+  }
+
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      localStorage.setItem("token", token);
+    if (store && rawAuth) {
+      axios.defaults.headers.common.Authorization = `Bearer ${store.token.access}`;
+      localStorage.setItem("auth", rawAuth);
     } else {
       delete axios.defaults.headers.common.Authorization;
-      localStorage.removeItem("token");
+      localStorage.removeItem("auth");
     }
-  }, [token]);
+  }, [store, rawAuth]);
 
-  // Memoized value of the authentication context
-  const contextValue: AuthData = useMemo(
+  const contextValue: AuthInfo = useMemo(
     () => ({
-      token,
-      setToken,
+      ...store,
+      setAuthenticated,
+      dropAuthenticated,
     }),
-    [token]
+    [store]
   );
 
   // Provide the authentication context to the children components
@@ -49,6 +89,6 @@ export function AuthProvider({ children }: Props) {
   );
 };
 
-export function useAuth() : AuthData {
+export function useAuth() : AuthInfo {
   return useContext(AuthContext);
 }

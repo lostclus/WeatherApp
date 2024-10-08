@@ -1,4 +1,5 @@
 import type { ServerErrors } from 'src/utils/forms';
+import type { AuthResponse } from 'src/auth/auth-provider';
 
 import axios from "axios";
 import { useState, useCallback } from 'react';
@@ -20,14 +21,12 @@ import { CONFIG } from 'src/config-global';
 import { Iconify } from 'src/components/iconify';
 
 import { useAuth } from "src/auth/auth-provider";
-import { useAccount } from "src/auth/account-provider";
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();
-  const { setToken } = useAuth();
-  const { setAccount } = useAccount();
+  const { setAuthenticated } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -55,13 +54,8 @@ export function SignInView() {
       )
       .then(
 	(response) => {
-	  const token = response.data.access as string;
-	  const account = {
-	    user_id: 1,
-	    email: response.data.email as string,
-	  };
-	  setToken(token);
-	  setAccount(account);
+	  const authResp = response.data as AuthResponse
+	  setAuthenticated(authResp);
 	  router.push('/')
 	}
       )
@@ -77,7 +71,7 @@ export function SignInView() {
 	}
       );
     }
-  }, [router, email, password, setErrors, setToken, setAccount]);
+  }, [router, email, password, setErrors, setAuthenticated]);
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
