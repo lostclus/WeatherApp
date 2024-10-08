@@ -1,0 +1,11 @@
+Django
+django-ninja
+django-ninja-extra
+django-ninja-jwt
+ipython
+psycopg[binary]
+pydantic[email]
+pytest
+pytest-django
+sentry-sdk
+uvicorn

@@ -1,0 +1,4 @@
+black
+django-stubs[compatible-mypy]
+mypy
+ruff
