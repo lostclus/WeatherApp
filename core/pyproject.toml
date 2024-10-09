@@ -1,17 +1,17 @@
 [project]
-name = "weatherapp_main"
+name = "weatherapp_core"
 authors = [
     {name = "Kostiantyn Korikov", email = "lostclus@gmail.com"},
 ]
 version = "0.0.0"
-description = "WeatherApp main service"
+description = "WeatherApp core service"
 
 [tool.black]
 target-version = ["py312"]
 exclude = '''
 /(
   | venv
-  | weatherapp_main/.*/migrations
+  | weatherapp_core/.*/migrations
 )/
 '''
 
@@ -23,7 +23,7 @@ lint.select = [
   "B",   # flake8-bugbear
   "I",   # isort
 ]
-exclude = ["venv", "weatherapp_main/*/migrations"]
+exclude = ["venv", "weatherapp_core/*/migrations"]
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["ninja.Query"]
@@ -51,11 +51,11 @@ no_implicit_reexport = true
 strict_equality = true
 extra_checks = true
 exclude = [
-    "^weatherapp_main/.*/migrations",
+    "^weatherapp_core/.*/migrations",
 ]
 
 [tool.django-stubs]
-django_settings_module = "weatherapp_main.settings"
+django_settings_module = "weatherapp_core.settings"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "weatherapp_main.settings"
+DJANGO_SETTINGS_MODULE = "weatherapp_core.settings"

@@ -4,7 +4,7 @@ import string
 import pytest
 from ninja_jwt.tokens import RefreshToken
 
-from weatherapp_main.users.models import User
+from weatherapp_core.users.models import User
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def password():
 @pytest.mark.django_db(transaction=True)
 def test_user_create(client, password):
     response = client.post(
-        "/api/v1/users/",
+        "/core/api/v1/users/",
         data={
             "email": "test@example.com",
             "password": password,
@@ -65,7 +65,7 @@ def test_user_create(client, password):
 @pytest.mark.django_db(transaction=True)
 def test_user_create_invalid_email(client, password):
     response = client.post(
-        "/api/v1/users/",
+        "/core/api/v1/users/",
         data={
             "email": "invalid",
             "password": password,
@@ -101,7 +101,7 @@ def test_user_create_invalid_email(client, password):
 @pytest.mark.django_db(transaction=True)
 def test_user_create_invalid_password(pw, client):
     response = client.post(
-        "/api/v1/users/",
+        "/core/api/v1/users/",
         data={
             "email": "test@example.com",
             "password": pw,
@@ -118,7 +118,7 @@ def test_user_create_invalid_password(pw, client):
 @pytest.mark.django_db(transaction=True)
 def test_user_create_already_exits(client, user, password):
     response = client.post(
-        "/api/v1/users/",
+        "/core/api/v1/users/",
         data={
             "email": user.email,
             "password": password,
@@ -141,7 +141,7 @@ def test_user_create_already_exits(client, user, password):
 @pytest.mark.django_db(transaction=True)
 def test_user_get(client, user, auth_headers):
     response = client.get(
-        f"/api/v1/users/{user.pk}",
+        f"/core/api/v1/users/{user.pk}",
         content_type="application/json",
         headers=auth_headers,
     )
@@ -164,7 +164,7 @@ def test_user_get(client, user, auth_headers):
 @pytest.mark.django_db(transaction=True)
 def test_user_get_unauthenticated(client, user):
     response = client.get(
-        f"/api/v1/users/{user.pk}",
+        f"/core/api/v1/users/{user.pk}",
         content_type="application/json",
     )
 
@@ -174,7 +174,7 @@ def test_user_get_unauthenticated(client, user):
 @pytest.mark.django_db(transaction=True)
 def test_user_update(client, user, auth_headers):
     response = client.patch(
-        f"/api/v1/users/{user.pk}",
+        f"/core/api/v1/users/{user.pk}",
         data={
             "date_format": "DD.MM.YYYY",
         },
@@ -200,7 +200,7 @@ def test_user_update(client, user, auth_headers):
 @pytest.mark.django_db(transaction=True)
 def test_user_update_unauthenticated(client, user):
     response = client.patch(
-        f"/api/v1/users/{user.pk}",
+        f"/core/api/v1/users/{user.pk}",
         data={
             "date_format": "DD.MM.YYYY",
         },

@@ -11,7 +11,7 @@ RUN pip install --upgrade pip
 WORKDIR /root
 
 COPY ../protocol ../protocol
-COPY main/requirements.txt ./
+COPY core/requirements.txt ./
 RUN sed -i "s/^-e //" requirements.txt \
     && pip wheel --wheel-dir=/root/wheels \
     -r ./requirements.txt
@@ -37,7 +37,7 @@ RUN addgroup -g $USER_GROUP_ID -S appuser \
 WORKDIR /app
 
 COPY ../protocol ../protocol
-COPY main/requirements.txt ./
+COPY core/requirements.txt ./
 RUN \
     sed -i "s|^-e ../protocol|weatherapp.protocol|" requirements.txt \
     && pip install --no-index \
@@ -58,12 +58,12 @@ FROM base AS production
 
 WORKDIR /app
 
-COPY main/weatherapp_main ./weatherapp_main
-COPY main/*.py ./
-COPY main/pyproject.toml ./
+COPY core/weatherapp_core ./weatherapp_core
+COPY core/*.py ./
+COPY core/pyproject.toml ./
 
 RUN python manage.py collectstatic --noinput
 
 USER appuser
 
-CMD uvicorn weatherapp_main.asgi:application
+CMD uvicorn weatherapp_core.asgi:application

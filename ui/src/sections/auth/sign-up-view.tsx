@@ -47,7 +47,7 @@ export function SignUpView() {
       axios(
 	{
 	  method: 'post',
-	  url: `${CONFIG.api.mainURL}/v1/users/`,
+	  url: `${CONFIG.api.coreURL}/v1/users/`,
 	  data: { email, password },
 	}
       )

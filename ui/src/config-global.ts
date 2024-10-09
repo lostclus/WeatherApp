@@ -6,7 +6,7 @@ export type ConfigValue = {
   appName: string;
   appVersion: string;
   api: {
-      mainURL: string;
+      coreURL: string;
   };
 };
 
@@ -16,6 +16,6 @@ export const CONFIG: ConfigValue = {
   appName: 'WeatherApp',
   appVersion: packageJson.version,
   api: {
-      mainURL: import.meta.env.VITE_MAIN_API_BASE_URL || 'http://localhost:8000/main/api',
+      coreURL: import.meta.env.VITE_CORE_API_BASE_URL || 'http://localhost:8000/core/api',
   },
 };

@@ -1,5 +1,5 @@
 """
-URL configuration for weatherapp_main project.
+URL configuration for weatherapp_core project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -21,13 +21,13 @@ from ninja_extra import NinjaExtraAPI
 from ninja_jwt.authentication import JWTAuth
 from ninja_jwt.controller import NinjaJWTDefaultController
 
-from weatherapp_main.users.api import UsersController
+from weatherapp_core.users.api import UsersController
 
 api = NinjaExtraAPI(auth=JWTAuth())
 api.register_controllers(NinjaJWTDefaultController, UsersController)
 # api.add_router("", languages_router)
 
 urlpatterns = [
-    path("main/admin/", admin.site.urls),
-    path("main/api/v1/", api.urls),
+    path("core/admin/", admin.site.urls),
+    path("core/api/v1/", api.urls),
 ]

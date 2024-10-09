@@ -48,7 +48,7 @@ export function SignInView() {
       axios(
 	{
 	  method: 'post',
-	  url: `${CONFIG.api.mainURL}/v1/token/pair`,
+	  url: `${CONFIG.api.coreURL}/v1/token/pair`,
 	  data: { email, password },
 	}
       )

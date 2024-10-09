@@ -2,19 +2,19 @@ volumes:
   postgres-data:
     driver: local
 
-x-main-config: &main-config
+x-core-config: &core-config
   build:
     context: .
-    dockerfile: main/Dockerfile
+    dockerfile: core/Dockerfile
     target: development
   volumes:
-    - ./main:/app
+    - ./core:/app
   depends_on:
     postgres:
       condition: service_healthy
   environment:
     API_PORT: "8000"
-    DB_DATABASE: "weatherapp_main"
+    DB_DATABASE: "weatherapp_core"
     DB_HOST: "postgres"
     DB_PASSWORD: ""
     DB_USERNAME: "postgres"
@@ -31,7 +31,7 @@ x-ui-config: &ui-config
     - ./ui/public:/app/public
     - ./ui/src:/app/src
   environment:
-    VITE_MAIN_API_BASE_URL: "http://localhost:3000/main/api"
+    VITE_CORE_API_BASE_URL: "http://localhost:3000/core/api"
 
 services:
   haproxy:
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./docker-compose/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     depends_on:
-      - main
+      - core
       - ui
 
   postgres:
@@ -58,8 +58,8 @@ services:
       retries: 5
       start_period: 1m
 
-  main:
-    <<: *main-config
+  core:
+    <<: *core-config
     ports:
       - "8000:8000"
 

@@ -1,6 +1,6 @@
 from django.db import models
 
-from weatherapp_main.users.models import User
+from weatherapp_core.users.models import User
 
 
 class Location(models.Model):

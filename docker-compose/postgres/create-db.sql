@@ -1,1 +1,1 @@
-CREATE DATABASE weatherapp_main;
+CREATE DATABASE weatherapp_core;

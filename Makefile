@@ -1,6 +1,6 @@
-SERVICES=main
+SERVICES=core
 LIBS=protocol
-UI=ui-mui
+UI=ui
 
 lint:
 	for d in $(LIBS) $(SERVICES) $(UI); do make -C $$d lint; done

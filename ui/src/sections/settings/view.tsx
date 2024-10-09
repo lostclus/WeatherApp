@@ -40,7 +40,7 @@ export function SettingsView() {
       axios(
 	{
 	  method: 'patch',
-	  url: `${CONFIG.api.mainURL}/v1/users/${user.id}/`,
+	  url: `${CONFIG.api.coreURL}/v1/users/${user.id}/`,
 	  data: {
 	    temperature_unit: temperatureUnit,
 	  },

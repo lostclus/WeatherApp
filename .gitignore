@@ -1,6 +1,8 @@
 /protocol/venv
+/protocol/venv.lint
 /protocol/src/*.egg-info
-/main/venv
+/core/venv
+/core/venv.lint
 *.pyc
 __pycache__
 .*.swp
