@@ -61,12 +61,8 @@ export function SignInView() {
       )
       .catch(
 	(error) => {
-	  if (typeof error.response.data.detail === "string") {
-	    newErrors.addError('email', error.response.data.detail);
-	  } else {
-	    const serverErrors: ServerErrors = error.response.data;
-	    newErrors.addFromServer(serverErrors);
-	  }
+	  const serverErrors: ServerErrors = error.response.data;
+	  newErrors.addFromServer(serverErrors);
 	  setErrors(newErrors);
 	}
       );
@@ -83,8 +79,8 @@ export function SignInView() {
         sx={{ mb: 3 }}
 	value={email}
 	onChange={(ev) => setEmail(ev.target.value)}
-	error={errors.hasErrorsIn('email')}
-	helperText={errors.getErrorsIn('email')}
+	error={errors.hasErrorsIn('email', '__all__')}
+	helperText={errors.getErrorsIn('email', '__all__')}
       />
 
       {/*

@@ -1,20 +1,30 @@
-export type ServerErrors = { detail: { msg: string, loc: string[] }[] };
+export type ServerErrorDetail = { msg: string, loc: string[] }
+export type ServerErrors = { detail: ServerErrorDetail[] | string };
 export type ErrorsDict = { [index: string]: string[]};
 
 export class FormErrors {
-  _errors: ErrorsDict = {};
+  private _errors: ErrorsDict = {};
+
+  catchAllField = "__all__"
 
   hasErrors(): boolean {
     return Object.keys(this._errors).length > 0;
   }
 
-  hasErrorsIn(field: string): boolean {
-    return field in this._errors;
+  hasErrorsIn(...fields: string[]): boolean {
+    return fields.some((field) => field in this._errors);
   }
 
-  getErrorsIn(field: string): string | null {
-    if (!this.hasErrorsIn(field)) return null;
-    return this._errors[field].join(" ");
+  getErrorsIn(...fields: string[]): string | null {
+    const errors: string[] = [];
+
+    fields.forEach((field) => {
+      if (field in this._errors)
+	errors.splice(-1, 0, ...this._errors[field]);
+    });
+
+    if (errors.length === 0) return null;
+    return errors.join(" ");
   }
 
   addError(field: string, message: string): void {
@@ -22,12 +32,16 @@ export class FormErrors {
     this._errors[field].push(message);
   }
 
-  addFromServer(serverErrors: ServerErrors): void {
-    serverErrors.detail.forEach(
-      ({ msg, loc }) => {
-	const field = loc.at(-1) as string;
-	this.addError(field, msg);
-      }
-    );
+  addFromServer(serverErrors: ServerErrors, ): void {
+    if (typeof serverErrors.detail === "string") {
+      this.addError(this.catchAllField, serverErrors.detail)
+    } else {
+      serverErrors.detail.forEach(
+	({ msg, loc }) => {
+	  const field = loc.at(-1) as string;
+	  this.addError(field, msg);
+	}
+      );
+    }
   }
 }
