@@ -2,31 +2,8 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useMemo, useState, useEffect, useContext, createContext } from "react";
 
-export type AuthResponse = {
-  access: string,
-  refresh: string,
-  email: string,
-};
+import type { AuthInfo, AuthStore, AuthResponse} from "./types";
 
-export type UserInfo = {
-  id: string,
-  email: string,
-}
-
-type AuthStore = {
-  token: {
-    access: string,
-    refresh: string,
-  } | null,
-  user: UserInfo | null,
-}
-
-type AuthCallbackInfo = {
-  setAuthenticated: (response: AuthResponse) => void,
-  dropAuthenticated: () => void,
-};
-
-export type AuthInfo = AuthStore & AuthCallbackInfo;
 
 const nullAuth: AuthInfo = {
   token: null,

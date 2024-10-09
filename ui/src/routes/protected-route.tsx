@@ -1,6 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-import { useAuth } from "./auth-provider";
+import { useAuth } from "src/client/auth-provider";
 
 export const ProtectedRoute = () => {
   const { user } = useAuth();

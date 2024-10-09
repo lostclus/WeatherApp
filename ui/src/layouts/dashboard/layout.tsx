@@ -7,9 +7,9 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 
-import { Iconify } from 'src/components/iconify';
+import { useAuth } from "src/client/auth-provider";
 
-import { useAuth } from "src/auth/auth-provider";
+import { Iconify } from 'src/components/iconify';
 
 import { Main } from './main';
 import { layoutClasses } from '../classes';

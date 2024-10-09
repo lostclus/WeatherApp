@@ -1,6 +1,8 @@
-export type ServerErrorDetail = { msg: string, loc: string[] }
-export type ServerErrors = { detail: ServerErrorDetail[] | string };
-export type ErrorsDict = { [index: string]: string[]};
+import type { ServerErrors } from './types'
+
+type ErrorsDict = {
+    [index: string]: string[]
+};
 
 export class FormErrors {
   private _errors: ErrorsDict = {};

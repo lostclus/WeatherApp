@@ -1,4 +1,4 @@
-import type { UserInfo } from 'src/auth/auth-provider';
+import type { UserInfo } from 'src/client/types';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { useState, useCallback } from 'react';
@@ -15,7 +15,7 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
 
-import { useAuth } from 'src/auth/auth-provider';
+import { useAuth } from 'src/client/auth-provider';
 
 // ----------------------------------------------------------------------
 

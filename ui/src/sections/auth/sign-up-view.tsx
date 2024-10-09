@@ -1,4 +1,4 @@
-import type { ServerErrors } from 'src/utils/forms';
+import type { ServerErrors } from 'src/client/types';
 
 import axios from "axios";
 import { useState, useCallback } from 'react';
@@ -12,9 +12,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { FormErrors } from 'src/utils/forms';
-
 import { CONFIG } from 'src/config-global';
+import { FormErrors } from 'src/client/forms';
 
 import { Iconify } from 'src/components/iconify';
 

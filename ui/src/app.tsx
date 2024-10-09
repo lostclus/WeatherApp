@@ -4,9 +4,9 @@ import { Router } from 'src/routes/sections';
 
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
+import { AuthProvider } from 'src/client/auth-provider';
 import { ThemeProvider } from 'src/theme/theme-provider';
 
-import { AuthProvider } from 'src/auth/auth-provider'
 
 // ----------------------------------------------------------------------
 

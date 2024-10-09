@@ -7,10 +7,10 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
 import { SimpleLayout } from 'src/layouts/simple';
+import { useAuth } from "src/client/auth-provider";
 import { DashboardLayout } from 'src/layouts/dashboard';
 
-import { useAuth } from "src/auth/auth-provider";
-import { ProtectedRoute } from 'src/auth/protected-route';
+import { ProtectedRoute } from './protected-route';
 
 // ----------------------------------------------------------------------
 

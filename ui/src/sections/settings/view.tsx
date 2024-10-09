@@ -1,4 +1,4 @@
-import type { ServerErrors } from 'src/utils/forms';
+import type { ServerErrors } from 'src/client/types';
 
 import axios from "axios";
 import { useState, useCallback } from 'react';
@@ -12,13 +12,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { FormErrors } from 'src/utils/forms';
-
 import { CONFIG } from 'src/config-global';
+import { FormErrors } from 'src/client/forms';
+import { useAuth } from "src/client/auth-provider";
 import { DashboardContent } from 'src/layouts/dashboard';
-
-import { useAuth } from "src/auth/auth-provider";
-
 
 
 // ----------------------------------------------------------------------
