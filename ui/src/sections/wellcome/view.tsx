@@ -9,12 +9,10 @@ export function WellcomeView() {
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
-        <div>
         Hi, Welcome to WeatherApp 👋
-	</div>
-        <div>
+      </Typography>
+      <Typography>
 	Please <Link href="/sign-in">sign-in</Link>
-	</div>
       </Typography>
     </DashboardContent>
   );

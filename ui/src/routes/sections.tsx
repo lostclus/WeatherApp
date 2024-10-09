@@ -6,7 +6,11 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 
 import { varAlpha } from 'src/theme/styles';
 import { AuthLayout } from 'src/layouts/auth';
+import { SimpleLayout } from 'src/layouts/simple';
 import { DashboardLayout } from 'src/layouts/dashboard';
+
+import { useAuth } from "src/auth/auth-provider";
+import { ProtectedRoute } from 'src/auth/protected-route';
 
 // ----------------------------------------------------------------------
 
@@ -15,6 +19,7 @@ export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const SignUpPage = lazy(() => import('src/pages/sign-up'));
+export const SettingsPage = lazy(() => import('src/pages/settings'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
@@ -34,20 +39,42 @@ const renderFallback = (
 );
 
 export function Router() {
+  const { user } = useAuth();
+
+  const homePageElement = (user) ? (
+    <DashboardLayout>
+      <Suspense fallback={renderFallback}>
+      <Outlet />
+      </Suspense>
+    </DashboardLayout>
+  ) : (
+    <SimpleLayout>
+      <Suspense fallback={renderFallback}>
+      <Outlet />
+      </Suspense>
+    </SimpleLayout>
+  )
+
   return useRoutes([
+    {
+      element: homePageElement,
+      children: [
+        { element: <HomePage />, index: true },
+      ],
+    },
     {
       element: (
         <DashboardLayout>
           <Suspense fallback={renderFallback}>
-            <Outlet />
+	  <ProtectedRoute />
           </Suspense>
         </DashboardLayout>
       ),
       children: [
-        { element: <HomePage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
+        { path: 'settings', element: <SettingsPage /> },
       ],
     },
     {
