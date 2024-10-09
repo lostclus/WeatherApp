@@ -6,6 +6,7 @@ import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
 import { AuthProvider } from 'src/client/auth-provider';
 import { ThemeProvider } from 'src/theme/theme-provider';
+import { ServerConstantsProvider } from 'src/client/server-constants-provider';
 
 
 // ----------------------------------------------------------------------
@@ -15,9 +16,11 @@ export default function App() {
 
   return (
     <ThemeProvider>
-	<AuthProvider>
+      <AuthProvider>
+	<ServerConstantsProvider>
 	  <Router />
-	</AuthProvider>
+	</ServerConstantsProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

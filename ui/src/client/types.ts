@@ -25,10 +25,21 @@ export type AuthCallbackInfo = {
 export type AuthInfo = AuthStore & AuthCallbackInfo;
 
 export type ServerErrorDetail = {
-    msg: string,
-    loc: string[],
+  msg: string,
+  loc: string[],
 }
 
 export type ServerErrors = {
-    detail: ServerErrorDetail[] | string,
+  detail: ServerErrorDetail[] | string,
+};
+
+export type ServerChoicesList = { [index: string]: string };
+
+export type ServerConstants = {
+  timezones: ServerChoicesList,
+  temperatureUnits: ServerChoicesList,
+  windSpeedUnits: ServerChoicesList,
+  precipitationUnits: ServerChoicesList,
+  dateFormats: ServerChoicesList,
+  timeFormats: ServerChoicesList,
 };

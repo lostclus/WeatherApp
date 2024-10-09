@@ -17,6 +17,10 @@ export class FormErrors {
     return fields.some((field) => field in this._errors);
   }
 
+  getErrors(): string | null {
+    return this.getErrorsIn(...Object.keys(this._errors));
+  }
+
   getErrorsIn(...fields: string[]): string | null {
     const errors: string[] = [];
 

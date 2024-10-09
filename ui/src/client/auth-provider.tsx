@@ -42,14 +42,18 @@ export function AuthProvider({ children }: Props) {
   }
 
   useEffect(() => {
-    if (store && rawAuth) {
-      axios.defaults.headers.common.Authorization = `Bearer ${store.token.access}`;
+    if (rawAuth) {
       localStorage.setItem("auth", rawAuth);
     } else {
-      delete axios.defaults.headers.common.Authorization;
       localStorage.removeItem("auth");
     }
-  }, [store, rawAuth]);
+  }, [rawAuth]);
+
+  if (store && rawAuth) {
+    axios.defaults.headers.common.Authorization = `Bearer ${store.token.access}`;
+  } else {
+    delete axios.defaults.headers.common.Authorization;
+  }
 
   const contextValue: AuthInfo = useMemo(
     () => ({
