@@ -20,7 +20,9 @@ class UsersController(ControllerBase):
     @http_post("/", auth=None, response={status.HTTP_201_CREATED: UserOutSchema})
     def create_user(self, payload: UserCreateSchema) -> User:
         if User.objects.filter(email=payload.email).exists():
-            raise ValidationError([{"msg": _("User already exists."), "loc": ["email"]}])
+            raise ValidationError(
+                [{"msg": _("User already exists."), "loc": ["email"]}]
+            )
 
         user = User(email=payload.email)
         user.set_password(payload.password)
