@@ -2,26 +2,8 @@ import random
 import string
 
 import pytest
-from ninja_jwt.tokens import RefreshToken
 
 from weatherapp_core.users.models import User
-
-
-@pytest.fixture
-def user():
-    return User.objects.create(email="test@example.com")
-
-
-@pytest.fixture
-def token(user):
-    return RefreshToken.for_user(user)
-
-
-@pytest.fixture
-def auth_headers(token):
-    return {
-        "Authorization": f"Bearer {token.access_token}",
-    }
 
 
 @pytest.fixture
@@ -132,7 +114,8 @@ def test_user_create_already_exits(client, user, password):
     assert response_data == {
         "detail": [
             {
-                "email": "User already exists.",
+                "msg": "User already exists.",
+                "loc": ["email"],
             },
         ],
     }

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import sentry_sdk
@@ -137,6 +138,10 @@ STATIC_URL = "core/static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+NINJA_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=3),
+}
 
 _logging_handlers = os.getenv("LOGGING_HANDLERS", "console").split(",")
 _logging_level = os.getenv("LOGGING_LEVEL", "DEBUG")

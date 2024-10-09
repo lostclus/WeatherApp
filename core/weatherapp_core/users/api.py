@@ -10,6 +10,8 @@ from ninja_extra import (
     status,
 )
 
+from weatherapp_core.api_auth import async_auth
+
 from .models import User
 from .schema import UserCreateSchema, UserEditSchema, UserOutSchema
 
@@ -36,6 +38,7 @@ class UsersController(ControllerBase):
 
         return user
 
+    @transaction.atomic
     @http_generic("/{int:user_id}", methods=["put", "patch"], response=UserOutSchema)
     def update_user(self, user_id: int, payload: UserEditSchema) -> User:
         user = User.objects.get(pk=user_id)
@@ -44,7 +47,7 @@ class UsersController(ControllerBase):
         user.save()
         return user
 
-    @http_get("/{int:user_id}", response=UserOutSchema)
-    def get_user_by_id(self, user_id: int) -> User:
-        user = User.objects.get(pk=user_id)
+    @http_get("/{int:user_id}", auth=async_auth, response=UserOutSchema)
+    async def get_user_by_id(self, user_id: int) -> User:
+        user = await User.objects.aget(pk=user_id)
         return user
