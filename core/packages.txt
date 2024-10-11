@@ -1,4 +1,6 @@
+celery[redis]
 Django
+django-kafka-streamer
 django-ninja
 django-ninja-extra
 django-ninja-jwt

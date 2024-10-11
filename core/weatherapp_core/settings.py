@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "ninja_extra",
     "ninja_jwt",
+    "kafkastreamer",
     "weatherapp_core.geo",
     "weatherapp_core.users",
 ]
@@ -143,6 +144,15 @@ NINJA_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=3),
 }
 
+CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379")
+
+KAFKA_STREAMER = {
+    "DEFAULT_SOURCE": "core",
+    "BOOTSTRAP_SERVERS": (
+        os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092").split(",")
+    ),
+}
+
 _logging_handlers = os.getenv("LOGGING_HANDLERS", "console").split(",")
 _logging_level = os.getenv("LOGGING_LEVEL", "DEBUG")
 
@@ -166,6 +176,10 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
+        "celery": {
+            "level": "INFO",
+            "handlers": _logging_handlers,
+        },
         "weatherapp": {
             "level": "DEBUG",
             "handlers": _logging_handlers,

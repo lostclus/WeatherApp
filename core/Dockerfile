@@ -4,6 +4,7 @@ FROM python:$PYTHON_VER-alpine AS builder
 
 RUN apk add --no-cache \
     build-base \
+    git \
     postgresql-dev
 
 RUN pip install --upgrade pip
@@ -40,6 +41,7 @@ COPY ../protocol ../protocol
 COPY core/requirements.txt ./
 RUN \
     sed -i "s|^-e ../protocol|weatherapp.protocol|" requirements.txt \
+    && sed -i "s/ @ git.*$//" requirements.txt \
     && pip install --no-index \
     --find-links=/root/wheels \
     -r ./requirements.txt

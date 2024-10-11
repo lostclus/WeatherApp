@@ -1,4 +1,5 @@
 black
+celery-stubs
 django-stubs[compatible-mypy]
 mypy
 ruff

@@ -1,37 +1,8 @@
 volumes:
   postgres-data:
     driver: local
-
-x-core-config: &core-config
-  build:
-    context: .
-    dockerfile: core/Dockerfile
-    target: development
-  volumes:
-    - ./core:/app
-  depends_on:
-    postgres:
-      condition: service_healthy
-  environment:
-    API_PORT: "8000"
-    DB_DATABASE: "weatherapp_core"
-    DB_HOST: "postgres"
-    DB_PASSWORD: ""
-    DB_USERNAME: "postgres"
-    DEBUG: ${DEBUG:-1}
-    UVICORN_HOST: "0.0.0.0"
-    UVICORN_PORT: "8000"
-
-x-ui-config: &ui-config
-  build:
-    context: .
-    dockerfile: ui/Dockerfile
-    target: development
-  volumes:
-    - ./ui/public:/app/public
-    - ./ui/src:/app/src
-  environment:
-    VITE_CORE_API_BASE_URL: "http://localhost:3000/core/api"
+  kafka-data:
+    driver: local
 
 services:
   haproxy:
@@ -43,6 +14,32 @@ services:
     depends_on:
       - core
       - ui
+
+  redis:
+    image: redis:7-alpine
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.7
+    ports:
+      - "9092:9092"
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_BROKER_ID: "1"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CFG_LISTENERS: "CONTROLLER://kafka:9093,PLAINTEXT://:9092"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_ENABLE_KRAFT: "yes"
+    volumes:
+      - ./docker-compose/kafka/initdb.d:/docker-entrypoint-initdb.d
+      - kafka-data:/bitnami
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list"]
+      interval: 30s
+      timeout: 10s
+      retries: 50
 
   postgres:
     image: postgres:17
@@ -58,12 +55,49 @@ services:
       retries: 5
       start_period: 1m
 
-  core:
-    <<: *core-config
+  core: &core-config
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+      target: development
+    volumes:
+      - ./core:/app
+    depends_on:
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      API_PORT: "8000"
+      CELERY_BROKER_URL: "redis://redis:6379"
+      DB_DATABASE: "weatherapp_core"
+      DB_HOST: "postgres"
+      DB_PASSWORD: ""
+      DB_USERNAME: "postgres"
+      DEBUG: ${DEBUG:-1}
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
     ports:
       - "8000:8000"
 
+  core-worker:
+    <<: *core-config
+    ports: []
+    command: celery -A weatherapp_core.celery worker -B -c 1
+
   ui:
-    <<: *ui-config
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+      target: development
+    volumes:
+      - ./ui/public:/app/public
+      - ./ui/src:/app/src
+    environment:
+      VITE_CORE_API_BASE_URL: "http://localhost:3000/core/api"
+
     ports:
       - "3039:3039"
