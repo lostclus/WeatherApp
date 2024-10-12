@@ -30,6 +30,7 @@ jedi==0.19.1
 kafka-python-ng==2.2.3
 kombu==5.4.2
 matplotlib-inline==0.1.7
+ninja-schema==0.13.6
 packaging==24.1
 parso==0.8.4
 pexpect==4.9.0

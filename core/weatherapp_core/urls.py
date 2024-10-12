@@ -20,13 +20,18 @@ from django.urls import path
 from ninja_extra import NinjaExtraAPI
 from ninja_jwt.controller import NinjaJWTDefaultController
 
+from weatherapp_core.geo.api import LocationsController
 from weatherapp_core.uihelpers.api import router as uihelpers_router
 from weatherapp_core.users.api import UsersController
 
 from .api_auth import auth
 
 api = NinjaExtraAPI(auth=auth)
-api.register_controllers(NinjaJWTDefaultController, UsersController)
+api.register_controllers(
+    NinjaJWTDefaultController,
+    LocationsController,
+    UsersController,
+)
 api.add_router("", uihelpers_router)
 
 urlpatterns = [

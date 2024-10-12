@@ -30,10 +30,7 @@ extend-immutable-calls = ["ninja.Query"]
 
 [tool.mypy]
 mypy_path = [
-    "../prometheus/src",
     "../protocol/src",
-    "../storage/src",
-    "../queue/src",
     ".",
 ]
 plugins = ["mypy_django_plugin.main"]

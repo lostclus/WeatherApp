@@ -5,6 +5,7 @@ django-ninja
 django-ninja-extra
 django-ninja-jwt
 ipython
+ninja-schema
 psycopg[binary]
 pydantic[email]
 pytest
