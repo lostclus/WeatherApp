@@ -7,7 +7,7 @@ version = "0.0.0"
 description = "WeatherApp protocol library"
 
 dependencies = [
-  "pydantic>=2.9",
+  "pydantic[email]>=2.9",
 ]
 requires-python = ">= 3.12"
 
