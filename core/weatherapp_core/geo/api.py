@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, cast
 
 from django.contrib.auth.models import AnonymousUser
 from django.db import models
 from django.http import HttpRequest
 from ninja_extra import (
+    ModelAsyncEndpointFactory,
     ModelConfig,
     ModelControllerBase,
     ModelSchemaConfig,
@@ -40,7 +41,11 @@ class LocationService(ModelService):
         assert user.is_authenticated
         queryset = await super().get_all_async()
         assert isinstance(queryset, models.QuerySet)
-        queryset = queryset.filter(models.Q(user=user) | models.Q(user=None))
+
+        queryset_my = queryset.filter(user=user)
+        queryset_sys = queryset.filter(user=None)
+        queryset = queryset_my | queryset_sys
+
         return queryset
 
 
@@ -77,4 +82,21 @@ class LocationsController(ModelControllerBase):
         model=Location,
         async_routes=True,
         schema_config=ModelSchemaConfig(exclude=set(), read_only_fields=["user"]),
+    )
+
+    def _get_request_user(self) -> User | AnonymousUser:
+        assert self.context
+        request = self.context.request
+        assert isinstance(request, HttpRequest)
+        return request.user
+
+    def _get_my_queryset(self, **kwargs: Any) -> models.QuerySet:
+        user = self._get_request_user()
+        assert user.is_authenticated
+        return Location.objects.filter(user=user)
+
+    list_my = ModelAsyncEndpointFactory.list(
+        schema_out=cast(type[PydanticModel], model_config.retrieve_schema),
+        path="/my",
+        queryset_getter=_get_my_queryset,
     )

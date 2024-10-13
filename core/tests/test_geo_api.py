@@ -127,6 +127,33 @@ def test_location_list(client, user, auth_headers, location):
     ]
 
 
+def test_location_my_list(client, user, auth_headers, location):
+    response = client.get("/core/api/v1/locations/my", headers=auth_headers)
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+    results = response_data["results"]
+
+    assert response_data == {
+        "count": 1,
+        "next": None,
+        "previous": None,
+        "results": results,
+    }
+
+    assert results == [
+        {
+            "id": location.pk,
+            "name": "Null island",
+            "latitude": "0.00000",
+            "longitude": "0.00000",
+            "is_default": False,
+            "is_active": True,
+            "user": user.pk,
+        },
+    ]
+
+
 def test_location_update(client, user, auth_headers, location):
     response = client.patch(
         f"/core/api/v1/locations/{location.pk}",
