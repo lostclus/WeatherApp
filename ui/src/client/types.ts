@@ -43,3 +43,12 @@ export type ServerConstants = {
   dateFormats: ServerChoicesList,
   timeFormats: ServerChoicesList,
 };
+
+export type Location_ = {
+  id: string,
+  name: string,
+  latitude: string,
+  longitude: string,
+  isDefault: boolean,
+  isActive: boolean,
+};
