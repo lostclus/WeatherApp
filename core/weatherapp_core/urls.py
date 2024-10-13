@@ -24,9 +24,9 @@ from weatherapp_core.geo.api import LocationsController
 from weatherapp_core.uihelpers.api import router as uihelpers_router
 from weatherapp_core.users.api import UsersController
 
-from .api_auth import auth
+from .api_auth import async_auth
 
-api = NinjaExtraAPI(auth=auth)
+api = NinjaExtraAPI(auth=async_auth)
 api.register_controllers(
     NinjaJWTDefaultController,
     LocationsController,

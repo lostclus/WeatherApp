@@ -5,6 +5,8 @@ import pytest
 
 from weatherapp_core.users.models import User
 
+pytestmark = pytest.mark.django_db(transaction=True)
+
 
 @pytest.fixture
 def password():
@@ -13,7 +15,6 @@ def password():
     )
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_create(client, password):
     response = client.post(
         "/core/api/v1/users/",
@@ -44,7 +45,6 @@ def test_user_create(client, password):
     assert user.email == "test@example.com"
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_create_invalid_email(client, password):
     response = client.post(
         "/core/api/v1/users/",
@@ -80,7 +80,6 @@ def test_user_create_invalid_email(client, password):
 
 
 @pytest.mark.parametrize("pw", ["", "1", "a", "test"])
-@pytest.mark.django_db(transaction=True)
 def test_user_create_invalid_password(pw, client):
     response = client.post(
         "/core/api/v1/users/",
@@ -97,7 +96,6 @@ def test_user_create_invalid_password(pw, client):
     assert response_data["detail"][0]["loc"] == ["body", "payload", "password"]
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_create_already_exits(client, user, password):
     response = client.post(
         "/core/api/v1/users/",
@@ -121,7 +119,6 @@ def test_user_create_already_exits(client, user, password):
     }
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_get(client, user, auth_headers):
     response = client.get(
         f"/core/api/v1/users/{user.pk}",
@@ -144,7 +141,6 @@ def test_user_get(client, user, auth_headers):
     }
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_get_unauthenticated(client, user):
     response = client.get(
         f"/core/api/v1/users/{user.pk}",
@@ -154,7 +150,16 @@ def test_user_get_unauthenticated(client, user):
     assert response.status_code == 401, response.content
 
 
-@pytest.mark.django_db(transaction=True)
+def test_user_get_unauthorized(client, user, auth_headers, other_user):
+    response = client.get(
+        f"/core/api/v1/users/{other_user.pk}",
+        content_type="application/json",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 403, response.content
+
+
 def test_user_update(client, user, auth_headers):
     response = client.patch(
         f"/core/api/v1/users/{user.pk}",
@@ -180,7 +185,6 @@ def test_user_update(client, user, auth_headers):
     }
 
 
-@pytest.mark.django_db(transaction=True)
 def test_user_update_unauthenticated(client, user):
     response = client.patch(
         f"/core/api/v1/users/{user.pk}",
@@ -191,3 +195,16 @@ def test_user_update_unauthenticated(client, user):
     )
 
     assert response.status_code == 401, response.content
+
+
+def test_user_update_unauthorized(client, user, auth_headers, other_user):
+    response = client.patch(
+        f"/core/api/v1/users/{other_user.pk}",
+        data={
+            "date_format": "DD.MM.YYYY",
+        },
+        content_type="application/json",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 403, response.content

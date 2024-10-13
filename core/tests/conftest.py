@@ -20,3 +20,9 @@ def auth_headers(token):
     return {
         "Authorization": f"Bearer {token.access_token}",
     }
+
+
+@pytest.fixture
+def other_user():
+    other_user = User.objects.create(email="other@example.com")
+    return other_user

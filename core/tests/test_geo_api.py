@@ -3,7 +3,8 @@ from decimal import Decimal
 import pytest
 
 from weatherapp_core.geo.models import Location
-from weatherapp_core.users.models import User
+
+pytestmark = pytest.mark.django_db(transaction=True)
 
 
 @pytest.fixture
@@ -17,13 +18,6 @@ def location(user):
     return location
 
 
-@pytest.fixture
-def other_user():
-    other_user = User.objects.create(email="other@example.com")
-    return other_user
-
-
-@pytest.mark.django_db(transaction=True)
 def test_location_create(client, user, auth_headers):
     response = client.post(
         "/core/api/v1/locations/",
@@ -48,6 +42,7 @@ def test_location_create(client, user, auth_headers):
         "longitude": "4.56",
         "is_default": False,
         "is_active": True,
+        "user": user.pk,
     }
 
     location = Location.objects.get(pk=location_id)
@@ -59,7 +54,6 @@ def test_location_create(client, user, auth_headers):
     assert location.user == user
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_get(client, user, auth_headers, location):
     response = client.get(
         f"/core/api/v1/locations/{location.pk}",
@@ -76,10 +70,10 @@ def test_location_get(client, user, auth_headers, location):
         "longitude": "0.00000",
         "is_default": False,
         "is_active": True,
+        "user": user.pk,
     }
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_get_system(client, user, auth_headers, location):
     location.user = None
     location.save()
@@ -99,10 +93,10 @@ def test_location_get_system(client, user, auth_headers, location):
         "longitude": "0.00000",
         "is_default": False,
         "is_active": True,
+        "user": None,
     }
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_get_unauthorized(client, user, auth_headers, location, other_user):
     location.user = other_user
     location.save()
@@ -115,7 +109,35 @@ def test_location_get_unauthorized(client, user, auth_headers, location, other_u
     assert response.status_code == 403, response.content
 
 
-@pytest.mark.django_db(transaction=True)
+def test_location_list(client, user, auth_headers, location):
+    response = client.get("/core/api/v1/locations/", headers=auth_headers)
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+    results = response_data["results"]
+
+    system_locations_count = Location.objects.filter(user=None).count()
+
+    assert response_data == {
+        "count": 1 + system_locations_count,
+        "next": None,
+        "previous": None,
+        "results": results,
+    }
+
+    assert [data for data in results if data["user"] == user.pk] == [
+        {
+            "id": location.pk,
+            "name": "Null island",
+            "latitude": "0.00000",
+            "longitude": "0.00000",
+            "is_default": False,
+            "is_active": True,
+            "user": user.pk,
+        },
+    ]
+
+
 def test_location_update(client, user, auth_headers, location):
     response = client.patch(
         f"/core/api/v1/locations/{location.pk}",
@@ -136,13 +158,13 @@ def test_location_update(client, user, auth_headers, location):
         "longitude": "0.00000",
         "is_default": False,
         "is_active": True,
+        "user": user.pk,
     }
 
     location.refresh_from_db()
     assert location.name == "Name updated"
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_update_unauthorized(client, user, auth_headers, location, other_user):
     location.user = other_user
     location.save()
@@ -159,7 +181,6 @@ def test_location_update_unauthorized(client, user, auth_headers, location, othe
     assert response.status_code == 403, response.content
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_delete(client, user, auth_headers, location):
     location_id = location.pk
 
@@ -172,7 +193,6 @@ def test_location_delete(client, user, auth_headers, location):
     assert not Location.objects.filter(pk=location_id).exists()
 
 
-@pytest.mark.django_db(transaction=True)
 def test_location_delete_unauthorized(client, user, auth_headers, location, other_user):
     location.user = other_user
     location.save()
