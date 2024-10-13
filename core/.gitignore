@@ -1,0 +1,6 @@
+/.ash_history
+/.cache
+/celerybeat-schedule
+/.ipython
+/venv
+/venv.lint

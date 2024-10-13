@@ -54,16 +54,24 @@ def test_location_invalid_longitude():
 
 
 def test_user():
+    assert TimeZone.UTC == "UTC"
+
     user = User(
         id=1,
         email="test@example.com",
+        first_name="FirstName",
+        last_name="LastName",
+        last_login=None,
+        is_superuser=False,
+        is_staff=False,
+        is_active=True,
+        date_joined="2024-01-01T00:00:00+00:00",
         timezone=TimeZone.UTC,
         temperature_unit=TemperatureUnit.CELSIUS,
         wind_speed_unit=WindSpeedUnit.M_S,
         precipitation_unit=PrecipitationUnit.MILLIMETER,
         date_format=DateFormat.ISO_8601,
         time_format=TimeFormat.H24,
-        is_active=True,
     )
     assert user
 
@@ -73,13 +81,19 @@ def test_user_invalid_email():
         User(
             id=1,
             email="invalid",
+            first_name="FirstName",
+            last_name="LastName",
+            last_login=None,
+            is_superuser=False,
+            is_staff=False,
+            is_active=True,
+            date_joined="2024-01-01T00:00:00+00:00",
             timezone=TimeZone.UTC,
             temperature_unit=TemperatureUnit.CELSIUS,
             wind_speed_unit=WindSpeedUnit.M_S,
             precipitation_unit=PrecipitationUnit.MILLIMETER,
             date_format=DateFormat.ISO_8601,
             time_format=TimeFormat.H24,
-            is_active=True,
         )
 
 
@@ -88,11 +102,16 @@ def test_user_invalid_timezone():
         User(
             id=1,
             email="test@example.com",
+            first_name="FirstName",
+            last_name="LastName",
+            last_login=None,
+            is_superuser=False,
+            is_staff=False,
+            is_active=True,
             timezone="invalid",
             temperature_unit=TemperatureUnit.CELSIUS,
             wind_speed_unit=WindSpeedUnit.M_S,
             precipitation_unit=PrecipitationUnit.MILLIMETER,
             date_format=DateFormat.ISO_8601,
             time_format=TimeFormat.H24,
-            is_active=True,
         )

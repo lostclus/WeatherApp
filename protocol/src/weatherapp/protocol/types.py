@@ -1,36 +1,36 @@
 import zoneinfo
-from enum import Enum
+from enum import StrEnum
 
-TimeZone = Enum(  # type: ignore
-    "TimeZoneChoices",
-    [tz for tz in sorted(zoneinfo.available_timezones())],
+TimeZone = StrEnum(  # type: ignore
+    "TimeZone",
+    [(tz, tz) for tz in sorted(zoneinfo.available_timezones())],
 )
 
 
-class TemperatureUnit(str, Enum):
+class TemperatureUnit(StrEnum):
     CELSIUS = "celsius"
     FAHRENHEIT = "fahrenheit"
 
 
-class WindSpeedUnit(str, Enum):
+class WindSpeedUnit(StrEnum):
     KM_H = "km/h"
     M_S = "m/s"
     MPH = "mph"
     KNOTS = "knots"
 
 
-class PrecipitationUnit(str, Enum):
+class PrecipitationUnit(StrEnum):
     MILLIMETER = "millimeter"
     INCH = "inch"
 
 
-class DateFormat(str, Enum):
+class DateFormat(StrEnum):
     ISO_8601 = "YYYY-MM-DD"
     DD_MM_YYYY = "DD/MM/YYYY"
     MM_DD_YYYY = "MM/DD/YYYY"
     DD_MM_YYYY_DS = "DD.MM.YYYY"
 
 
-class TimeFormat(str, Enum):
+class TimeFormat(StrEnum):
     H24 = "HH:mm"
     H12 = "hh:MM a"

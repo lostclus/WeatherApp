@@ -1,9 +1,3 @@
-/protocol/venv
-/protocol/venv.lint
-/protocol/src/*.egg-info
-/core/venv
-/core/venv.lint
-/core/celerybeat-schedule
 *.pyc
 __pycache__
 .*.swp

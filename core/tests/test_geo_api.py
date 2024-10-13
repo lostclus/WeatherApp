@@ -7,17 +7,6 @@ from weatherapp_core.geo.models import Location
 pytestmark = pytest.mark.django_db(transaction=True)
 
 
-@pytest.fixture
-def location(user):
-    location = Location.objects.create(
-        name="Null island",
-        latitude=Decimal(0),
-        longitude=Decimal(0),
-        user=user,
-    )
-    return location
-
-
 def test_location_create(client, user, auth_headers):
     response = client.post(
         "/core/api/v1/locations/",
