@@ -17,22 +17,19 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from ninja_extra import NinjaExtraAPI
-from ninja_jwt.controller import NinjaJWTDefaultController
+from ninja import NinjaAPI
 
-from weatherapp_core.geo.api import LocationsController
-from weatherapp_core.uihelpers.api import router as uihelpers_router
-from weatherapp_core.users.api import UsersController
+from weatherapp_core.geo.api import locations_router
+from weatherapp_core.jwtauth.api import auth_router
+from weatherapp_core.jwtauth.auth import async_auth_request
+from weatherapp_core.uihelpers.api import uihelpers_router
+from weatherapp_core.users.api import users_router
 
-from .api_auth import async_auth
-
-api = NinjaExtraAPI(auth=async_auth)
-api.register_controllers(
-    NinjaJWTDefaultController,
-    LocationsController,
-    UsersController,
-)
+api = NinjaAPI(auth=async_auth_request)
 api.add_router("", uihelpers_router)
+api.add_router("/token/", auth_router)
+api.add_router("/users/", users_router)
+api.add_router("/locations/", locations_router)
 
 urlpatterns = [
     path("core/admin/", admin.site.urls),

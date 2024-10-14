@@ -2,13 +2,12 @@ celery[redis]
 Django
 django-kafka-streamer
 django-ninja
-django-ninja-extra
-django-ninja-jwt
 ipython
-ninja-schema
 psycopg[binary]
 pydantic[email]
+PyJWT
 pytest
+pytest-asyncio
 pytest-django
 sentry-sdk
 uvicorn

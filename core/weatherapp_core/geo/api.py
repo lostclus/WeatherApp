@@ -1,102 +1,83 @@
-from typing import Any, cast
+from http import HTTPStatus
 
-from django.contrib.auth.models import AnonymousUser
 from django.db import models
 from django.http import HttpRequest
-from ninja_extra import (
-    ModelAsyncEndpointFactory,
-    ModelConfig,
-    ModelControllerBase,
-    ModelSchemaConfig,
-    ModelService,
-    api_controller,
-    permissions,
-    service_resolver,
-)
-from ninja_extra.controllers import RouteContext
-from pydantic import BaseModel as PydanticModel
+from django.shortcuts import aget_object_or_404
+from ninja import Router
 
-from weatherapp_core.permissions import ReadOnly
 from weatherapp_core.users.models import User
 
 from .models import Location
+from .schema import LocationInSchema, LocationOutSchema
+
+locations_router = Router()
 
 
-class LocationService(ModelService):
-    def _get_request_user(self) -> User | AnonymousUser:
-        context = service_resolver(RouteContext)
-        assert isinstance(context, RouteContext)
-        request = context.request
-        assert isinstance(request, HttpRequest)
+def _user_locations(request: HttpRequest) -> models.QuerySet[Location]:
+    user = request.user
+    assert isinstance(user, User)
+    queryset = Location.objects.all()
+    queryset_my = queryset.filter(user=user)
+    queryset_sys = queryset.filter(user=None)
+    queryset = queryset_my | queryset_sys
+    return queryset
+
+
+@locations_router.post("/", response={HTTPStatus.CREATED: LocationOutSchema})
+async def create_location(request: HttpRequest, payload: LocationInSchema) -> Location:
+    user = request.user
+    assert isinstance(user, User)
+
+    if payload.is_default:  # type: ignore
+        queryset = _user_locations(request)
+        await queryset.filter(user=user).aupdate(is_default=False)
+
+    loc = await Location.objects.acreate(user=user, **payload.dict())
+    return loc
+
+
+@locations_router.get("/", response=list[LocationOutSchema])
+async def list_locations(request: HttpRequest) -> list[Location]:
+    queryset = _user_locations(request).select_related("user")
+    return [obj async for obj in queryset]
+
+
+@locations_router.get("/my", response=list[LocationOutSchema])
+async def list_my_locations(request: HttpRequest) -> list[Location]:
+    user = request.user
+    assert isinstance(user, User)
+    queryset = _user_locations(request).filter(user=user)
+    return [obj async for obj in queryset]
+
+
+@locations_router.get("/{int:location_id}", response=LocationOutSchema)
+async def get_location(request: HttpRequest, location_id: int) -> Location:
+    queryset = _user_locations(request)
+    loc = await aget_object_or_404(queryset, pk=location_id)
+    return loc
+
+
+@locations_router.put("/{int:location_id}", response=LocationOutSchema)
+async def update_location(
+    request: HttpRequest, location_id: int, payload: LocationInSchema
+) -> Location:
+    queryset = _user_locations(request)
+    loc = await aget_object_or_404(queryset, pk=location_id)
+
+    if payload.is_default:  # type: ignore
         user = request.user
-        return user
+        assert isinstance(user, User)
+        await queryset.filter(user=user).exclude(pk=loc.pk).aupdate(is_default=False)
 
-    async def create_async(self, schema: PydanticModel, **kwargs: Any) -> Any:
-        user = self._get_request_user()
-        assert user.is_authenticated
-        return await super().create_async(schema, user=user, **kwargs)
+    for attr, value in payload.dict().items():
+        setattr(loc, attr, value)
+    await loc.asave()
 
-    async def get_all_async(self, **kwargs: Any) -> models.QuerySet | list[Any]:
-        user = self._get_request_user()
-        assert user.is_authenticated
-        queryset = await super().get_all_async()
-        assert isinstance(queryset, models.QuerySet)
-
-        queryset_my = queryset.filter(user=user)
-        queryset_sys = queryset.filter(user=None)
-        queryset = queryset_my | queryset_sys
-
-        return queryset
+    return loc
 
 
-class IsLocationOwner(permissions.BasePermission):
-    def has_permission(self, request: HttpRequest, controller: Any) -> bool:
-        return True
-
-    def has_object_permission(
-        self, request: HttpRequest, controller: Any, obj: Location
-    ) -> bool:
-        return request.user.is_authenticated and request.user.pk == obj.user_id
-
-
-class IsSystemLocation(permissions.BasePermission):
-    def has_permission(self, request: HttpRequest, controller: Any) -> bool:
-        return True
-
-    def has_object_permission(
-        self, request: HttpRequest, controller: Any, obj: Location
-    ) -> bool:
-        return obj.user_id is None
-
-
-@api_controller(
-    "/locations",
-    permissions=[
-        permissions.IsAuthenticated,
-        IsLocationOwner | (ReadOnly & IsSystemLocation),  # type: ignore
-    ],
-)
-class LocationsController(ModelControllerBase):
-    service = LocationService(Location)
-    model_config = ModelConfig(
-        model=Location,
-        async_routes=True,
-        schema_config=ModelSchemaConfig(exclude=set(), read_only_fields=["user"]),
-    )
-
-    def _get_request_user(self) -> User | AnonymousUser:
-        assert self.context
-        request = self.context.request
-        assert isinstance(request, HttpRequest)
-        return request.user
-
-    def _get_my_queryset(self, **kwargs: Any) -> models.QuerySet:
-        user = self._get_request_user()
-        assert user.is_authenticated
-        return Location.objects.filter(user=user)
-
-    list_my = ModelAsyncEndpointFactory.list(
-        schema_out=cast(type[PydanticModel], model_config.retrieve_schema),
-        path="/my",
-        queryset_getter=_get_my_queryset,
-    )
+@locations_router.delete("/{int:location_id}", response={HTTPStatus.NO_CONTENT: None})
+async def delete_location(request: HttpRequest, location_id: int) -> None:
+    queryset = _user_locations(request)
+    loc = await aget_object_or_404(queryset, pk=location_id)
+    await loc.adelete()

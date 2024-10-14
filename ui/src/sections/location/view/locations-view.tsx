@@ -1,4 +1,4 @@
-import type { Location_ } from 'src/client/types';
+import type { Location_, ServerErrors } from 'src/client/types';
 
 import axios from "axios";
 import { useState, useEffect, useCallback } from 'react';
@@ -13,6 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { CONFIG } from 'src/config-global';
+import { FormErrors } from 'src/client/forms';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
@@ -52,13 +53,16 @@ export function LocationsView() {
   const [filterName, setFilterName] = useState('');
   const [locations, setLocations] = useState<Location_[] | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [dialogData, setDialogData] = useState<Location_>(nullLocation);
+  const [isDialogCreation, setDialogCreation] = useState(false);
+  const [dialogData, setDialogData] = useState(nullLocation);
+  const [dialogErrors, setDialogErrors] = useState(new FormErrors());
+  const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
     axios.get(`${CONFIG.api.coreURL}/v1/locations/my`)
     .then(
       (response) => {
-	const newLocations = response.data.results.map(
+	const newLocations = response.data.map(
           ({ id, name, latitude, longitude, is_default, is_active }: LocationServerProps) => {
             const loc: Location_ = {
               id, name, latitude, longitude, isDefault: is_default, isActive: is_active
@@ -69,13 +73,21 @@ export function LocationsView() {
 	setLocations(newLocations);
       }
     )
-  }, []);
+  }, [refreshCount]);
+
+  const createLocation = () => {
+    if (!locations) return;
+    setDialogData(nullLocation);
+    setDialogCreation(true);
+    setDialogOpen(true);
+  };
 
   const editLocation = (locationId: string) => {
     if (!locations) return;
     locations.filter(
       (loc) => loc.id === locationId
     ).forEach((loc) => setDialogData(loc));
+    setDialogCreation(false);
     setDialogOpen(true);
   };
 
@@ -84,31 +96,64 @@ export function LocationsView() {
     axios.delete(`${CONFIG.api.coreURL}/v1/locations/${locationId}`)
     .then(
       () => {
-        const newLocations = locations.filter((loc) => loc.id !== locationId);
-        setLocations(newLocations);
+	setRefreshCount(refreshCount + 1);
       }
     );
   };
 
+  const deleteManyLocations = (locationIds: string[]) => {
+    locationIds.forEach((locationId) => {
+      axios.delete(`${CONFIG.api.coreURL}/v1/locations/${locationId}`)
+      .then(
+	() => {
+	  setRefreshCount(refreshCount + 1);
+	}
+      );
+    });
+  }
+
   const handleDialogSave = () => {
     if (!locations) return;
 
-    locations.filter(
-      (loc) => loc.id === dialogData.id
-    )
-    .map((loc) => Object.assign(loc, dialogData))
-    .forEach(({ id, name, latitude, longitude, isDefault, isActive }) => {
-      const serverLoc: LocationServerProps = {
-        id, name, latitude, longitude, is_default: isDefault, is_active: isActive,
-      };
-      axios.patch(
-        `${CONFIG.api.coreURL}/v1/locations/${id}`, serverLoc,
+    const newErrors = new FormErrors();
+
+    if (!dialogData.name) {
+      newErrors.addError('name', 'Name is required!');
+    }
+
+    if (newErrors.hasErrors()) {
+      setDialogErrors(newErrors);
+      return;
+    }
+
+    const { id, name, latitude, longitude, isDefault, isActive } = dialogData;
+    const serverLoc: LocationServerProps = {
+      id, name, latitude, longitude, is_default: isDefault, is_active: isActive,
+    };
+
+    const req = (isDialogCreation) ? (
+      axios.post(
+	`${CONFIG.api.coreURL}/v1/locations/`, serverLoc
       )
-      .then((result) => {
-        setLocations(locations);
-        setDialogOpen(false);
-      });
-    });
+    ) : (
+      axios.put(
+	`${CONFIG.api.coreURL}/v1/locations/${id}`, serverLoc
+      )
+    );
+    req.then((result) => {
+      setLocations(locations);
+      setDialogOpen(false);
+      newErrors.clear();
+      setDialogErrors(newErrors);
+      setRefreshCount(refreshCount + 1);
+    })
+    .catch(
+      (error) => {
+	const serverErrors: ServerErrors = error.response.data;
+	newErrors.addFromServer(serverErrors);
+	setDialogErrors(newErrors);
+      }
+    );
   }
 
   const dataFiltered: Location_[] = applyFilter({
@@ -129,6 +174,7 @@ export function LocationsView() {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
+	  onClick={createLocation}
         >
           New location
         </Button>
@@ -142,6 +188,7 @@ export function LocationsView() {
             setFilterName(event.target.value);
             table.onResetPage();
           }}
+	  onDeleteMany={() => deleteManyLocations(table.selected)}
         />
 
         <Scrollbar>
@@ -208,9 +255,10 @@ export function LocationsView() {
       </Card>
       <LocationDialog
         open={isDialogOpen}
-        isCreation={false}
+        isCreation={isDialogCreation}
         formData={dialogData}
         setFormData={setDialogData}
+	errors={dialogErrors}
         onClose={() => setDialogOpen(false)}
         onSave={handleDialogSave}
       />

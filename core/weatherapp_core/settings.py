@@ -42,9 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "ninja_extra",
-    "ninja_jwt",
     "kafkastreamer",
+    "weatherapp_core.jwtauth",
     "weatherapp_core.geo",
     "weatherapp_core.users",
 ]
@@ -140,9 +139,9 @@ STATIC_URL = "core/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-NINJA_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=3),
-}
+JWT_ALGORITHM = "HS256"
+JWT_ACCESS_TOKEN_LIFETIME = timedelta(hours=3)
+JWT_REFRESH_TOKEN_LIFETIME = timedelta(days=1)
 
 CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379")
 

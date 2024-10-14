@@ -13,9 +13,12 @@ type LocationTableToolbarProps = {
   numSelected: number;
   filterName: string;
   onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onDeleteMany: () => void;
 };
 
-export function LocationTableToolbar({ numSelected, filterName, onFilterName }: LocationTableToolbarProps) {
+export function LocationTableToolbar(
+  { numSelected, filterName, onFilterName, onDeleteMany }: LocationTableToolbarProps
+) {
   return (
     <Toolbar
       sx={{
@@ -50,7 +53,7 @@ export function LocationTableToolbar({ numSelected, filterName, onFilterName }: 
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={onDeleteMany}>
             <Iconify icon="solar:trash-bin-trash-bold" />
           </IconButton>
         </Tooltip>

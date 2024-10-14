@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from weatherapp_core.users.models import User
@@ -5,8 +6,16 @@ from weatherapp_core.users.models import User
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
-    latitude = models.DecimalField(max_digits=8, decimal_places=5)
-    longitude = models.DecimalField(max_digits=8, decimal_places=5)
+    latitude = models.DecimalField(
+        max_digits=8,
+        decimal_places=5,
+        validators=[MinValueValidator(-90), MaxValueValidator(90)],
+    )
+    longitude = models.DecimalField(
+        max_digits=8,
+        decimal_places=5,
+        validators=[MinValueValidator(-180), MaxValueValidator(180)],
+    )
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

@@ -1,7 +1,8 @@
 export type AuthResponse = {
-  access: string,
-  refresh: string,
   email: string,
+  user_id: string,
+  token_access: string,
+  token_refresh: string,
 };
 
 export type UserInfo = {

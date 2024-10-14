@@ -1,7 +1,8 @@
 import pytest
 
+pytestmark = pytest.mark.django_db(transaction=True)
 
-@pytest.mark.django_db
+
 def test_constraints_get(client, auth_headers):
     def is_valid_dict(value):
         return (

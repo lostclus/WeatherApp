@@ -50,4 +50,8 @@ export class FormErrors {
       );
     }
   }
+
+  clear(): void {
+    this._errors = {};
+  }
 }

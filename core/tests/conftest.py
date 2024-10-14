@@ -1,41 +1,43 @@
 from decimal import Decimal
 
 import pytest
-from ninja_jwt.tokens import RefreshToken
+import pytest_asyncio
 
 from weatherapp_core.geo.models import Location
+from weatherapp_core.jwtauth.logic import create_token_for_user
 from weatherapp_core.users.models import User
 
 
-@pytest.fixture
-def user(django_db_blocker):
+@pytest_asyncio.fixture
+async def user(django_db_blocker):
     with django_db_blocker.unblock():
-        return User.objects.create(email="test@example.com")
+        return await User.objects.acreate(email="test@example.com")
 
 
 @pytest.fixture
-def token(user):
-    return RefreshToken.for_user(user)
+def jwt_token(user):
+    token = create_token_for_user(user)
+    return token
 
 
 @pytest.fixture
-def auth_headers(token):
+def auth_headers(jwt_token):
     return {
-        "Authorization": f"Bearer {token.access_token}",
+        "Authorization": f"Bearer {jwt_token.token_access}",
     }
 
 
-@pytest.fixture
-def other_user(django_db_blocker):
+@pytest_asyncio.fixture
+async def other_user(django_db_blocker):
     with django_db_blocker.unblock():
-        other_user = User.objects.create(email="other@example.com")
+        other_user = await User.objects.acreate(email="other@example.com")
         return other_user
 
 
-@pytest.fixture
-def location(django_db_blocker, user):
+@pytest_asyncio.fixture
+async def location(django_db_blocker, user):
     with django_db_blocker.unblock():
-        location = Location.objects.create(
+        location = await Location.objects.acreate(
             name="Null island",
             latitude=Decimal(0),
             longitude=Decimal(0),

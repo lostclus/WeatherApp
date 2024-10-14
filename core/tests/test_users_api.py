@@ -15,8 +15,9 @@ def password():
     )
 
 
-def test_user_create(client, password):
-    response = client.post(
+@pytest.mark.asyncio
+async def test_user_create(async_client, password):
+    response = await async_client.post(
         "/core/api/v1/users/",
         data={
             "email": "test@example.com",
@@ -41,12 +42,13 @@ def test_user_create(client, password):
         "wind_speed_unit": "m/s",
     }
 
-    user = User.objects.get(pk=user_id)
+    user = await User.objects.aget(pk=user_id)
     assert user.email == "test@example.com"
 
 
-def test_user_create_invalid_email(client, password):
-    response = client.post(
+@pytest.mark.asyncio
+async def test_user_create_invalid_email(async_client, password):
+    response = await async_client.post(
         "/core/api/v1/users/",
         data={
             "email": "invalid",
@@ -80,8 +82,9 @@ def test_user_create_invalid_email(client, password):
 
 
 @pytest.mark.parametrize("pw", ["", "1", "a", "test"])
-def test_user_create_invalid_password(pw, client):
-    response = client.post(
+@pytest.mark.asyncio
+async def test_user_create_invalid_password(pw, async_client):
+    response = await async_client.post(
         "/core/api/v1/users/",
         data={
             "email": "test@example.com",
@@ -96,8 +99,9 @@ def test_user_create_invalid_password(pw, client):
     assert response_data["detail"][0]["loc"] == ["body", "payload", "password"]
 
 
-def test_user_create_already_exits(client, user, password):
-    response = client.post(
+@pytest.mark.asyncio
+async def test_user_create_already_exits(async_client, user, password):
+    response = await async_client.post(
         "/core/api/v1/users/",
         data={
             "email": user.email,
@@ -119,8 +123,9 @@ def test_user_create_already_exits(client, user, password):
     }
 
 
-def test_user_get(client, user, auth_headers):
-    response = client.get(
+@pytest.mark.asyncio
+async def test_user_get(async_client, user, auth_headers):
+    response = await async_client.get(
         f"/core/api/v1/users/{user.pk}",
         content_type="application/json",
         headers=auth_headers,
@@ -141,8 +146,9 @@ def test_user_get(client, user, auth_headers):
     }
 
 
-def test_user_get_unauthenticated(client, user):
-    response = client.get(
+@pytest.mark.asyncio
+async def test_user_get_unauthenticated(async_client, user):
+    response = await async_client.get(
         f"/core/api/v1/users/{user.pk}",
         content_type="application/json",
     )
@@ -150,8 +156,9 @@ def test_user_get_unauthenticated(client, user):
     assert response.status_code == 401, response.content
 
 
-def test_user_get_unauthorized(client, user, auth_headers, other_user):
-    response = client.get(
+@pytest.mark.asyncio
+async def test_user_get_unauthorized(async_client, user, auth_headers, other_user):
+    response = await async_client.get(
         f"/core/api/v1/users/{other_user.pk}",
         content_type="application/json",
         headers=auth_headers,
@@ -160,8 +167,9 @@ def test_user_get_unauthorized(client, user, auth_headers, other_user):
     assert response.status_code == 403, response.content
 
 
-def test_user_update(client, user, auth_headers):
-    response = client.patch(
+@pytest.mark.asyncio
+async def test_user_update(async_client, user, auth_headers):
+    response = await async_client.patch(
         f"/core/api/v1/users/{user.pk}",
         data={
             "date_format": "DD.MM.YYYY",
@@ -185,8 +193,9 @@ def test_user_update(client, user, auth_headers):
     }
 
 
-def test_user_update_unauthenticated(client, user):
-    response = client.patch(
+@pytest.mark.asyncio
+async def test_user_update_unauthenticated(async_client, user):
+    response = await async_client.patch(
         f"/core/api/v1/users/{user.pk}",
         data={
             "date_format": "DD.MM.YYYY",
@@ -197,8 +206,9 @@ def test_user_update_unauthenticated(client, user):
     assert response.status_code == 401, response.content
 
 
-def test_user_update_unauthorized(client, user, auth_headers, other_user):
-    response = client.patch(
+@pytest.mark.asyncio
+async def test_user_update_unauthorized(async_client, user, auth_headers, other_user):
+    response = await async_client.patch(
         f"/core/api/v1/users/{other_user.pk}",
         data={
             "date_format": "DD.MM.YYYY",

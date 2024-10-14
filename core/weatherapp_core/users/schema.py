@@ -25,7 +25,7 @@ class UserCreateSchema(ModelSchema):
         return value
 
 
-class UserEditSchema(ModelSchema):
+class UserUpdateSchema(ModelSchema):
     class Config:
         model = User
         model_fields = [
@@ -36,6 +36,7 @@ class UserEditSchema(ModelSchema):
             "date_format",
             "time_format",
         ]
+        fields_optional = "__all__"
 
 
 class UserOutSchema(ModelSchema):

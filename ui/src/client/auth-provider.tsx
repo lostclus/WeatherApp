@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useMemo, useState, useEffect, useContext, createContext } from "react";
 
 import type { AuthInfo, AuthStore, AuthResponse} from "./types";
@@ -23,14 +22,13 @@ export function AuthProvider({ children }: Props) {
   const store = (rawAuth) ? JSON.parse(rawAuth) : null;
 
   const setAuthenticated = (response: AuthResponse): void => {
-    const tokenData = jwtDecode<{ [index: string]: any}>(response.access);
     const newStore: AuthStore = {
       token: {
-	access: response.access,
-	refresh: response.refresh,
+	access: response.token_access,
+	refresh: response.token_refresh,
       },
       user: {
-	id: tokenData.user_id as string,
+	id: response.user_id,
 	email: response.email,
       }
     };

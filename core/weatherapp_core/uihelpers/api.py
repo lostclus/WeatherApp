@@ -3,7 +3,6 @@ from typing import Any
 from django.http import HttpRequest
 from ninja import Router
 
-from weatherapp_core.api_auth import async_auth
 from weatherapp_core.constants import (
     DateFormatChoices,
     PrecipitationUnitChoices,
@@ -15,10 +14,10 @@ from weatherapp_core.constants import (
 
 from .schema import ConstantsSchema
 
-router = Router(auth=async_auth)
+uihelpers_router = Router()
 
 
-@router.get("/constants")
+@uihelpers_router.get("/constants")
 async def constants(request: HttpRequest) -> ConstantsSchema:
     def choices_to_dict(choices: Any) -> dict[str, str]:
         return {str(value): str(text) for value, text in choices.choices}
