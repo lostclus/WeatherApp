@@ -1,0 +1,39 @@
+[project]
+name = "weatherapp_loader"
+authors = [
+    {name = "Kostiantyn Korikov", email = "lostclus@gmail.com"},
+]
+version = "0.0.0"
+description = "WeatherApp data load service"
+
+[tool.black]
+target-version = ["py312"]
+
+[tool.ruff]
+lint.select = [
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "I",   # isort
+]
+exclude = ["venv"]
+
+[tool.mypy]
+mypy_path = [
+    "../protocol/src",
+    ".",
+]
+warn_unused_configs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+extra_checks = true

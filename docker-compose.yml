@@ -69,7 +69,7 @@ services:
         condition: service_healthy
     environment:
       API_PORT: "8000"
-      CELERY_BROKER_URL: "redis://redis:6379"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
       DB_DATABASE: "weatherapp_core"
       DB_HOST: "postgres"
       DB_PASSWORD: ""
@@ -85,6 +85,23 @@ services:
     <<: *core-config
     ports: []
     command: celery -A weatherapp_core.celery worker -B -c 1
+
+  loader: &loader-config
+    build:
+      context: .
+      dockerfile: loader.srv/Dockerfile
+      target: development
+    volumes:
+      - ./loader.srv:/app
+    depends_on:
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      REDIS_QUEUE_URL: "redis://redis:6379/1"
+      REDIS_STORAGE_URL: "redis://redis:6379/2"
 
   ui:
     build:

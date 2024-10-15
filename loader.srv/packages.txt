@@ -1,0 +1,10 @@
+aiokafka
+arq
+git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]
+ipython
+pytest
+pytest-asyncio
+pytest-cov
+redis[hiredis]
+sentry-sdk[arq]
+uvicorn[standard]

@@ -1,4 +1,4 @@
-SERVICES=core.srv
+SERVICES=core.srv loader.srv
 LIBS=protocol.lib
 UI=ui
 
