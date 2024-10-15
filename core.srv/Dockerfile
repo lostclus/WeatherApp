@@ -11,8 +11,8 @@ RUN pip install --upgrade pip
 
 WORKDIR /root
 
-COPY ../protocol ../protocol
-COPY core/requirements.txt ./
+COPY ../protocol.lib ../protocol.lib
+COPY core.srv/requirements.txt ./
 RUN sed -i "s/^-e //" requirements.txt \
     && pip wheel --wheel-dir=/root/wheels \
     -r ./requirements.txt
@@ -37,10 +37,10 @@ RUN addgroup -g $USER_GROUP_ID -S appuser \
 
 WORKDIR /app
 
-COPY ../protocol ../protocol
-COPY core/requirements.txt ./
+COPY ../protocol.lib ../protocol.lib
+COPY core.srv/requirements.txt ./
 RUN \
-    sed -i "s|^-e ../protocol|weatherapp.protocol|" requirements.txt \
+    sed -i "s|^-e ../protocol.lib|weatherapp.protocol|" requirements.txt \
     && sed -i "s/ @ git.*$//" requirements.txt \
     && pip install --no-index \
     --find-links=/root/wheels \
@@ -60,9 +60,9 @@ FROM base AS production
 
 WORKDIR /app
 
-COPY core/weatherapp_core ./weatherapp_core
-COPY core/*.py ./
-COPY core/pyproject.toml ./
+COPY core.srv/weatherapp_core ./weatherapp_core
+COPY core.srv/*.py ./
+COPY core.srv/pyproject.toml ./
 
 RUN python manage.py collectstatic --noinput
 

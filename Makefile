@@ -1,5 +1,5 @@
-SERVICES=core
-LIBS=protocol
+SERVICES=core.srv
+LIBS=protocol.lib
 UI=ui
 
 lint:
