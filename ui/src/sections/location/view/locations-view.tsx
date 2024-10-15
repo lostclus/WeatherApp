@@ -32,7 +32,7 @@ const nullLocation: Location_ = {
     name: "",
     latitude: "",
     longitude: "",
-    isDefault: true,
+    isDefault: false,
     isActive: true,
 };
 
@@ -249,7 +249,7 @@ export function LocationsView() {
           count={(locations) ? locations.length : 0}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25, 100]}
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
@@ -271,7 +271,7 @@ export function LocationsView() {
 export function useTable() {
   const [page, setPage] = useState(0);
   const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState<string[]>([]);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 

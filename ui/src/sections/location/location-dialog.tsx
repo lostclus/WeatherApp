@@ -44,7 +44,7 @@ export function LocationDialog(props: LocationDialogProps) {
   };
 
   return (
-    <Dialog onClose={onClose} open={open}>
+    <Dialog fullWidth onClose={onClose} open={open}>
       <DialogTitle>{(isCreation) ? "New location" : "Edit location"}</DialogTitle>
       <DialogContent>
 	<Stack spacing={2}>
