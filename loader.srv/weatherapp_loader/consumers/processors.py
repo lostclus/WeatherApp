@@ -1,6 +1,5 @@
 import pickle
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any
 
 from aiosafeconsumer.datasync import EnumerateIDsRecord, EventType, ObjectID, Version
@@ -35,7 +34,7 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
 
     @staticmethod
     def _version_getter(item: Location) -> Version:
-        return int(datetime.fromisoformat(item.ev_time).timestamp())
+        return int(item.ev_time.timestamp())
 
     @staticmethod
     def _record_serializer(item: Location) -> bytes:
@@ -43,7 +42,7 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
 
     @staticmethod
     def _event_type_getter(item: Location) -> EventType:
-        return item.ev_type
+        return EventType(item.ev_type)
 
     @staticmethod
     def _id_getter(item: Location) -> ObjectID:

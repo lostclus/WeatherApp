@@ -1,3 +1,4 @@
+aiohttp
 aiokafka
 arq
 git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]

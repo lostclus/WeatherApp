@@ -1,3 +1,6 @@
+from datetime import UTC, datetime
+from decimal import Decimal
+
 import pytest
 from aiokafka import ConsumerRecord, TopicPartition
 from aiosafeconsumer.datasync import EventType
@@ -16,21 +19,21 @@ def worker():
 def locations():
     return [
         LocationRecord(
-            ev_time="2024-01-01T00:00:00+00:00",
+            ev_time=datetime(2024, 1, 1, tzinfo=UTC),
             ev_type=EventType.REFRESH,
             ev_source="core",
             id=1,
-            latitude="1.23",
-            longitude="4.56",
+            latitude=Decimal("1.23"),
+            longitude=Decimal("4.56"),
             is_active=True,
         ),
         LocationRecord(
-            ev_time="2024-01-01T00:00:00+00:00",
+            ev_time=datetime(2024, 1, 1, tzinfo=UTC),
             ev_type=EventType.REFRESH,
             ev_source="core",
             id=2,
-            latitude="7.8",
-            longitude="9.0",
+            latitude=Decimal("7.8"),
+            longitude=Decimal("9.0"),
             is_active=True,
         ),
     ]
