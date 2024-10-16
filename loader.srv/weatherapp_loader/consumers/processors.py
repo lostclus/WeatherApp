@@ -6,6 +6,7 @@ from typing import Any
 from aiosafeconsumer.datasync import EnumerateIDsRecord, EventType, ObjectID, Version
 from aiosafeconsumer.datasync.redis import RedisWriter, RedisWriterSettings
 
+from ..constants import LOCATIONS_KEY_PREFIX, LOCATIONS_VERSIONS_KEY
 from ..storage.redis import get_redis
 from ..types import (
     Location,
@@ -27,6 +28,8 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
             version_serializer=str,
             version_deserializer=int,
             record_serializer=self._record_serializer,
+            key_prefix=LOCATIONS_KEY_PREFIX,
+            versions_key=LOCATIONS_VERSIONS_KEY,
             **kwargs,
         )
 
@@ -36,7 +39,7 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
 
     @staticmethod
     def _record_serializer(item: Location) -> bytes:
-        return pickle.dumps(item._asdict())
+        return pickle.dumps(item)
 
     @staticmethod
     def _event_type_getter(item: Location) -> EventType:

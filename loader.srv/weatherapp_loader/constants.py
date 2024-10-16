@@ -1,0 +1,2 @@
+LOCATIONS_KEY_PREFIX = "location:"
+LOCATIONS_VERSIONS_KEY = "locations"
