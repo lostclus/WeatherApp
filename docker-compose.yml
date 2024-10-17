@@ -107,6 +107,8 @@ services:
       DB_USERNAME: "postgres"
       DEBUG: ${DEBUG:-1}
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
       UVICORN_HOST: "0.0.0.0"
       UVICORN_PORT: "8000"
     ports:
@@ -144,6 +146,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       REDIS_QUEUE_URL: "redis://redis:6379/1"
       REDIS_STORAGE_URL: "redis://redis:6379/2"
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
 
   loader-tasks:
     <<: *loader-config
