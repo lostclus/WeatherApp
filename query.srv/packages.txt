@@ -1,0 +1,13 @@
+aioch
+aiokafka
+fastapi
+git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]
+httpx
+ipython
+pydantic
+pydantic-settings
+pytest
+pytest-asyncio
+pytest-cov
+sentry-sdk[arq]
+uvicorn[standard]

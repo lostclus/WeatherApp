@@ -49,7 +49,7 @@ async def get_weather(
             resp_data = await resp.json()
 
     hourly = resp_data["hourly"]
-    ev_time = now or datetime.now(UTC)
+    ev_time = now or datetime.now(UTC).replace(microsecond=0)
 
     for idx, tm in enumerate(hourly["time"]):
         timestamp = datetime.fromisoformat(tm).replace(tzinfo=UTC)

@@ -1,0 +1,17 @@
+FROM alpine
+ARG GOOSE_VER=3.22.1
+ARG USER_ID=1000
+ARG USER_GROUP_ID=1000
+
+RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
+
+RUN addgroup -g $USER_GROUP_ID -S appuser \
+    && adduser -u $USER_ID -G appuser -S -s /bin/sh -h /app appuser
+
+ADD https://github.com/pressly/goose/releases/download/v${GOOSE_VER}/goose_linux_x86_64 /bin/goose
+RUN chmod +x /bin/goose
+
+RUN mkdir /migrations && chown appuser: /migrations
+
+WORKDIR /migrations
+USER appuser

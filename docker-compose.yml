@@ -68,7 +68,7 @@ services:
         condition: service_started
     restart: on-failure
     volumes:
-      # - ./docker-compose/clickhouse/config.xml:/etc/clickhouse-server/config.xml
+      - ./docker-compose/clickhouse/config.d/kafka.xml:/etc/clickhouse-server/config.d/kafka.xml
       - ./docker-compose/clickhouse/initdb.d:/docker-entrypoint-initdb.d
       - clickhouse-data:/var/lib/clickhouse
     ulimits:
@@ -156,6 +156,17 @@ services:
       REDIS_STORAGE_URL: "redis://redis:6379/12"
     profiles: ["test"]
     command: pytest --log-level=DEBUG -vv
+
+  query-migrate:
+    build:
+      context: query.srv
+      dockerfile: Dockerfile.migrations
+    volumes:
+      - ./query.srv/migrations:/migrations
+    environment:
+      GOOSE_DRIVER: clickhouse
+      GOOSE_DBSTRING: "clickhouse://default@clickhouse:9000/weatherapp_query"
+    command: goose up
 
   ui:
     build:

@@ -1,0 +1,15 @@
+<clickhouse>
+    <named_collections>
+	<kafka_cluster>
+	    <kafka_broker_list>kafka:9092</kafka_broker_list>
+	    <kafka_topic_list>weather</kafka_topic_list>
+	    <kafka_group_name>clickhouse_consumer</kafka_group_name>
+	    <kafka_format>JSONEachRow</kafka_format>
+	    <kafka_num_consumers>8</kafka_num_consumers>
+	    <kafka>
+		<auto_offset_reset>latest</auto_offset_reset>
+	    </kafka>
+	    <date_time_input_format>best_effort</date_time_input_format>
+	</kafka_cluster>
+    </named_collections>
+</clickhouse>
