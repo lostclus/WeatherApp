@@ -1,6 +1,7 @@
 aiohttp
 aiokafka
 arq
+click
 git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]
 ipython
 pytest

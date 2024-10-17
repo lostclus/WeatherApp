@@ -54,6 +54,11 @@ LOGGING = {
             "handlers": _logging_handlers,
             "propagate": True,
         },
+        "arq": {
+            "level": "INFO",
+            "handlers": _logging_handlers,
+            "propagate": True,
+        },
         "weatherapp": {
             "level": "DEBUG",
             "handlers": _logging_handlers,

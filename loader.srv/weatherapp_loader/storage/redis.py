@@ -30,7 +30,6 @@ async def close_redis_pool() -> None:
     del _local.pool
 
 
-def get_redis(pool: ConnectionPool | None = None) -> Redis:
-    if pool is None:
-        pool = get_redis_pool()
-    return Redis(connection_pool=pool)
+def get_redis(redis_pool: ConnectionPool | None = None) -> Redis:
+    redis_pool = redis_pool or get_redis_pool()
+    return Redis(connection_pool=redis_pool)

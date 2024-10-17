@@ -1,7 +1,13 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import NamedTuple
 
 from weatherapp.protocol.bus import EventType
+
+
+class OpenMeteoDataset(StrEnum):
+    HISTORICAL_WEATHER_API = "historical_weather_api"
+    HISTORICAL_FORECAST_API = "historical_forecast_api"
 
 
 class LocationRecord(NamedTuple):

@@ -1,28 +1,41 @@
+import logging
 import types
 import typing
 from collections.abc import AsyncGenerator
 from datetime import UTC, date, datetime
+from urllib.parse import urlencode
 
 import aiohttp
 
-from ..types import LocationRecord, WeatherRecord
+from ..types import LocationRecord, OpenMeteoDataset, WeatherRecord
 
-BASE_URL = "https://archive-api.open-meteo.com"
 EV_SOURCE = "loader"
+
+ENDPOINTS = {
+    OpenMeteoDataset.HISTORICAL_WEATHER_API: (
+        "https://archive-api.open-meteo.com/v1/archive"
+    ),
+    OpenMeteoDataset.HISTORICAL_FORECAST_API: (
+        "https://historical-forecast-api.open-meteo.com/v1/forecast"
+    ),
+}
+
+log = logging.getLogger(__name__)
 
 
 async def get_weather(
     start_date: date,
     end_date: date,
     location: LocationRecord,
+    dataset: OpenMeteoDataset | None = None,
     now: datetime | None = None,
 ) -> AsyncGenerator[WeatherRecord, None]:
-
+    dataset = dataset or OpenMeteoDataset.HISTORICAL_FORECAST_API
     weather_fields = WeatherRecord._fields[4:]
     weather_types = WeatherRecord.__annotations__
 
-    async with aiohttp.ClientSession(base_url=BASE_URL) as session:
-        url = "/v1/archive"
+    async with aiohttp.ClientSession() as session:
+        url = ENDPOINTS[dataset]
         params = {
             "latitude": location.latitude,
             "longitude": location.longitude,
@@ -31,6 +44,7 @@ async def get_weather(
             "hourly": ",".join(weather_fields),
             "wind_speed_unit": "ms",
         }
+        log.debug(f"Do request: {url}?{urlencode(params)}")
         async with session.get(url=url, params=params) as resp:
             resp_data = await resp.json()
 

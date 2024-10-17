@@ -1,4 +1,5 @@
 import threading
+from collections.abc import Callable
 from typing import cast
 
 from arq import ArqRedis
@@ -43,3 +44,7 @@ def get_arq_pool(
 
     pool = ArqRedis(redis_pool)
     return pool
+
+
+def func_path(func: Callable) -> str:
+    return f"{func.__module__}.{func.__name__}"

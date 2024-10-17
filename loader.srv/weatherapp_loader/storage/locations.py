@@ -1,15 +1,16 @@
 import pickle
 from typing import cast
 
-from redis.asyncio import Redis
-
 from ..constants import LOCATIONS_KEY_PREFIX, LOCATIONS_VERSIONS_KEY
 from ..types import LocationRecord
+from .redis import get_redis
 
 
-async def get_locations(redis: Redis) -> list[LocationRecord]:
-    versions = await redis.hgetall(LOCATIONS_VERSIONS_KEY)
+async def get_locations() -> list[LocationRecord]:
+    redis = get_redis()
+
     results: list[LocationRecord] = []
+    versions = await redis.hgetall(LOCATIONS_VERSIONS_KEY)
     ids = [key.decode() for key in versions.keys()]
     ids_chunked = [ids[i : i + 100] for i in range(0, len(ids), 100)]
 

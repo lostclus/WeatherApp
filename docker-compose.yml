@@ -91,6 +91,12 @@ services:
     ports: []
     command: python manage.py migrate
 
+  core-test:
+    <<: *core-config
+    ports: []
+    profiles: ["test"]
+    command: pytest --log-level=DEBUG -vv
+
   loader: &loader-config
     build:
       context: .
@@ -107,6 +113,18 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       REDIS_QUEUE_URL: "redis://redis:6379/1"
       REDIS_STORAGE_URL: "redis://redis:6379/2"
+
+  loader-tasks:
+    <<: *loader-config
+    command: python -m weatherapp_loader.tasks.worker
+
+  loader-test:
+    <<: *loader-config
+    environment:
+      REDIS_QUEUE_URL: "redis://redis:6379/11"
+      REDIS_STORAGE_URL: "redis://redis:6379/12"
+    profiles: ["test"]
+    command: pytest --log-level=DEBUG -vv
 
   ui:
     build:
