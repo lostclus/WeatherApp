@@ -86,6 +86,11 @@ services:
     ports: []
     command: celery -A weatherapp_core.celery worker -B -c 1
 
+  core-migrate:
+    <<: *core-config
+    ports: []
+    command: python manage.py migrate
+
   loader: &loader-config
     build:
       context: .
