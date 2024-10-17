@@ -61,6 +61,9 @@ def kafka_consumer_data(kafka_consumer_mock, locations):
 async def test_locations_consumer(
     storage_redis, worker, kafka_consumer_data, locations
 ):
+    stored_locations = await get_locations(storage_redis)
+    assert stored_locations == []
+
     await worker.run(burst=True)
 
     stored_locations = await get_locations(storage_redis)

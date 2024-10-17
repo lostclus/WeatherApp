@@ -33,3 +33,20 @@ def kafka_consumer_mock():
         consumer_m._coordinator = mock.AsyncMock()
 
         yield consumer_m
+
+
+@pytest.fixture
+def kafka_producer_mock_path():
+    return "aiokafka.AIOKafkaProducer"
+
+
+@pytest.fixture
+def kafka_producer_mock(kafka_producer_mock_path):
+    with mock.patch(kafka_producer_mock_path) as producer_class_m:
+        producer_m = producer_class_m.return_value
+        producer_m.start = mock.AsyncMock()
+        producer_m.stop = mock.AsyncMock()
+        producer_m.send = mock.AsyncMock()
+        producer_m.flush = mock.AsyncMock()
+
+        yield producer_m
