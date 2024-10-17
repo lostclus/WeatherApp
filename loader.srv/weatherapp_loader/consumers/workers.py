@@ -35,6 +35,7 @@ locations_worker_def = WorkerDef(
         source_class=LocationsSource,
         source_settings=LocationsSourceSettings(
             topics=["locations"],
+            group_id=LocationsWorker.worker_type,
             bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
             value_deserializer=json_to_namedtuple_deserializer(
                 LocationRecord,
@@ -45,6 +46,7 @@ locations_worker_def = WorkerDef(
         processor_class=LocationsWriter,
         processor_settings=LocationsWriterSettings(),
     ),
+    concurrency=4,
 )
 
 pool_settings = WorkerPoolSettings(

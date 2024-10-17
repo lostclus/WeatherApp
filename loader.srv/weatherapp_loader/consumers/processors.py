@@ -24,8 +24,8 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
             event_type_getter=self._event_type_getter,
             id_getter=self._id_getter,
             enum_getter=self._enum_getter,
-            version_serializer=str,
-            version_deserializer=int,
+            version_serializer=self._version_serializer,
+            version_deserializer=self._version_deserializer,
             record_serializer=self._record_serializer,
             key_prefix=LOCATIONS_KEY_PREFIX,
             versions_key=LOCATIONS_VERSIONS_KEY,
@@ -55,6 +55,14 @@ class LocationsWriterSettings(RedisWriterSettings[Location]):
     def _enum_getter(item: Location) -> EnumerateIDsRecord:
         assert isinstance(item, LocationEnumerateRecord)
         return EnumerateIDsRecord(ids=list(item.ids))
+
+    @staticmethod
+    def _version_serializer(ver: Version) -> bytes:
+        return str(ver).encode()
+
+    @staticmethod
+    def _version_deserializer(val: bytes) -> Version:
+        return int(val.decode())
 
 
 class LocationsWriter(RedisWriter[Location]):
