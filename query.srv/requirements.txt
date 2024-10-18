@@ -60,3 +60,4 @@ watchfiles==0.24.0
 wcwidth==0.2.13
 websockets==13.1
 -e ../protocol.lib
+-e ../stubs.lib

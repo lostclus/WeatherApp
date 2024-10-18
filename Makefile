@@ -1,5 +1,5 @@
 SERVICES=core.srv loader.srv query.srv
-LIBS=protocol.lib
+LIBS=protocol.lib stubs.lib
 UI=ui
 
 lint:

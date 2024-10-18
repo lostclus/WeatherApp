@@ -1,1 +1,2 @@
 -e ../protocol.lib
+-e ../stubs.lib

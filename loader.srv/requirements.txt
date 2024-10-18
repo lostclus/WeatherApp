@@ -1,7 +1,7 @@
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
 aiokafka==0.11.0
-aiosafeconsumer @ git+https://github.com/lostclus/aiosafeconsumer.git@6be2ad8a1d6dedb670dafa418268c963a73cca79
+aiosafeconsumer @ git+https://github.com/lostclus/aiosafeconsumer.git@80a7c176d18a6c67aa4c0325df4dfde6f26c93f8
 aiosignal==1.3.1
 annotated-types==0.7.0
 anyio==4.6.2.post1
@@ -60,3 +60,4 @@ wcwidth==0.2.13
 websockets==13.1
 yarl==1.15.4
 -e ../protocol.lib
+-e ../stubs.lib

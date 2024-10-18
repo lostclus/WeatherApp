@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 if not TYPE_CHECKING:
     from aiokafka import AIOKafkaProducer
 else:
-    from .kafka_stubs import AIOKafkaProducer
+    from weatherapp.stubs.kafka import AIOKafkaProducer
 
 from weatherapp.protocol.bus.serializers import namedtuple_to_json_serializer
 

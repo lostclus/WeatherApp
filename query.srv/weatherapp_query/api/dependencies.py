@@ -1,20 +1,9 @@
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated
 
 if not TYPE_CHECKING:
     from aioch import Client
 else:
-
-    class Client:
-        def __init__(**kwargs: Any):
-            pass
-
-        async def execute(
-            self,
-            sql: str,
-            params: dict[str, Any] | None = None,
-            settings: dict[str, Any] | None = None,
-        ) -> Any:
-            pass
+    from weatherapp.stubs.clickhouse import Client
 
 
 from fastapi import Depends

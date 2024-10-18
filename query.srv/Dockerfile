@@ -15,6 +15,7 @@ RUN pip install --upgrade pip
 WORKDIR /root
 
 COPY ../protocol.lib ../protocol.lib
+COPY ../stubs.lib ../stubs.lib
 COPY query.srv/requirements.txt ./
 RUN sed -i "s/^-e //" requirements.txt \
     && pip wheel --wheel-dir=/root/wheels \
@@ -40,9 +41,11 @@ RUN addgroup -g $USER_GROUP_ID -S appuser \
 WORKDIR /app
 
 COPY ../protocol.lib ../protocol.lib
+COPY ../stubs.lib ../stubs.lib
 COPY query.srv/requirements.txt ./
 RUN \
     sed -i "s|^-e ../protocol.lib|weatherapp.protocol|" requirements.txt \
+    && sed -i "s|^-e ../stubs.lib|weatherapp.stubs|" requirements.txt \
     && sed -i "s/ @ git.*$//" requirements.txt \
     && pip install --no-index \
     --find-links=/root/wheels \
