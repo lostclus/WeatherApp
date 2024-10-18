@@ -68,7 +68,7 @@ services:
         condition: service_started
     restart: on-failure
     volumes:
-      - ./docker-compose/clickhouse/config.d/kafka.xml:/etc/clickhouse-server/config.d/kafka.xml
+      - ./docker-compose/clickhouse/config.d:/etc/clickhouse-server/config.d
       - ./docker-compose/clickhouse/initdb.d:/docker-entrypoint-initdb.d
       - clickhouse-data:/var/lib/clickhouse
     ulimits:
@@ -161,20 +161,24 @@ services:
     profiles: ["test"]
     command: pytest ${PYTEST_OPTS:-}
 
-  query:
+  query: &query-config
     build:
       context: .
       dockerfile: query.srv/Dockerfile
       target: development
     volumes:
       - ./query.srv:/app
+    ports:
+      - "8001:8001"
     environment:
-      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_URL: "http://clickhouse:8123"
       CLICKHOUSE_DATABASE: weatherapp_query
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: ""
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: 8001
 
   query-migrate:
     build:
@@ -186,6 +190,11 @@ services:
       GOOSE_DRIVER: clickhouse
       GOOSE_DBSTRING: "clickhouse://default@clickhouse:9000/weatherapp_query"
     command: goose up
+
+  query-test:
+    <<: *query-config
+    ports: []
+    command: pytest ${PYTEST_OPTS:-}
 
   ui:
     build:

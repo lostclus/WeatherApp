@@ -1,14 +1,22 @@
 from typing import Any
 
 
-class Client:
-    def __init__(**kwargs: Any):
+class ChClient:
+    def __init__(self, session: Any, **kwargs: Any) -> None:
         pass
 
     async def execute(
         self,
-        sql: str,
+        query: str,
+        *args: Any,
         params: dict[str, Any] | None = None,
-        settings: dict[str, Any] | None = None,
+    ) -> None:
+        pass
+
+    async def fetch(
+        self,
+        query: str,
+        *args: Any,
+        params: dict[str, Any] | None = None,
     ) -> Any:
         pass

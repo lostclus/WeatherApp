@@ -1,31 +1,28 @@
-from datetime import datetime
+from datetime import date
 
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ..models import Weather
+from ..models import Weather, WeatherDataField
+from ..storage.weather import get_weather
 from .dependencies import ClickHouseDep
-
-
-class WeatherRequest(BaseModel):
-    location: int
-    start_date: datetime
-    end_date: datetime
-
 
 router = APIRouter()
 
 
-@router.get("/query/api/v1/weather")
-async def weather(payload: WeatherRequest, ch: ClickHouseDep) -> list[Weather]:
-    sql = """
-        SELECT *
-        FROM (
-            SELECT * FROM weather
-            LIMIT 1 BY (timestamp, location_id)
-        )
-        ORDER BY timestamp
-    """
-    results = await ch.execute(sql)
-    print("***", results)
-    return []
+class WeatherRequest(BaseModel):
+    location_id: int
+    start_date: date
+    end_date: date
+    fields: list[WeatherDataField] | None = None
+
+
+@router.post("/weather", response_model_exclude_unset=True)
+async def weather(req: WeatherRequest, ch: ClickHouseDep) -> list[Weather]:
+    return await get_weather(
+        ch,
+        location_ids=[req.location_id],
+        start_date=req.start_date,
+        end_date=req.end_date,
+        fields=req.fields,
+    )

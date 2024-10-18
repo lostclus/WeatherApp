@@ -1,24 +1,14 @@
-from typing import TYPE_CHECKING, Annotated
-
-if not TYPE_CHECKING:
-    from aioch import Client
-else:
-    from weatherapp.stubs.clickhouse import Client
-
+from collections.abc import AsyncIterator
+from typing import Annotated
 
 from fastapi import Depends
 
-from ..settings import settings
+from ..storage.clickhouse import ClickHouseClient, get_clickhouse_client
 
 
-def get_clickhouse() -> Client:
-    client = Client(
-        host=settings.clickhouse_host,
-        database=settings.clickhouse_database,
-        user=settings.clickhouse_user,
-        password=settings.clickhouse_password,
-    )
-    return client
+async def _get_clickhouse_client() -> AsyncIterator[ClickHouseClient]:
+    async with get_clickhouse_client() as client:
+        yield client
 
 
-ClickHouseDep = Annotated[Client, Depends(get_clickhouse)]
+ClickHouseDep = Annotated[ClickHouseClient, Depends(_get_clickhouse_client)]

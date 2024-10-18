@@ -41,7 +41,7 @@ Development plan:
 - [x] Implement consumer to sync locations data in `loader` service
 - [x] Implement asynchronous tasks in `loader` to get weather data from public API
   and stream it to Kafka
-- [ ] Implement consumer to sync weather data in `query` service
+- [x] Implement consumer to sync weather data in `query` service
 - [ ] Implement weather API in `query` service
 - [ ] Implement weather explore page in UI
 

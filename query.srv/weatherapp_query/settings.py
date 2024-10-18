@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    clickhouse_host: str = "localhost"
+    clickhouse_url: str = "http://localhost:8123"
     clickhouse_database: str = "weatherapp_query"
     clickhouse_user: str = "default"
     clickhouse_password: str = ""
