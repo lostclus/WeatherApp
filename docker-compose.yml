@@ -128,7 +128,7 @@ services:
     <<: *core-config
     ports: []
     profiles: ["test"]
-    command: pytest --log-level=DEBUG -vv
+    command: pytest ${PYTEST_OPTS:-}
 
   loader: &loader-config
     build:
@@ -159,7 +159,7 @@ services:
       REDIS_QUEUE_URL: "redis://redis:6379/11"
       REDIS_STORAGE_URL: "redis://redis:6379/12"
     profiles: ["test"]
-    command: pytest --log-level=DEBUG -vv
+    command: pytest ${PYTEST_OPTS:-}
 
   query:
     build:

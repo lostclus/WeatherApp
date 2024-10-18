@@ -60,3 +60,13 @@ First install Docker Compose, then type:
 
 <http://localhost:3000/core/api/v1/docs>
 : API documentation
+
+Run linters:
+
+    make lint
+
+Run tests:
+
+    docker compose run --rm core-test
+    docker compose run --rm loader-test
+    docker compose run --rm query-test
