@@ -28,7 +28,6 @@ COPY --from=builder /root/wheels /root/wheels
 
 RUN apk add --no-cache \
     gettext \
-    libpq \
     tzdata
 
 RUN pip install --upgrade pip

@@ -161,6 +161,21 @@ services:
     profiles: ["test"]
     command: pytest --log-level=DEBUG -vv
 
+  query:
+    build:
+      context: .
+      dockerfile: query.srv/Dockerfile
+      target: development
+    volumes:
+      - ./query.srv:/app
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_DATABASE: weatherapp_query
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
+
   query-migrate:
     build:
       context: query.srv
