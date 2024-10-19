@@ -59,7 +59,10 @@ First install Docker Compose, then type:
 : Admin interface
 
 <http://localhost:3000/core/api/v1/docs>
-: API documentation
+: core API documentation
+
+<http://localhost:3000/query/api/v1/docs>
+: query API documentation
 
 Run linters:
 

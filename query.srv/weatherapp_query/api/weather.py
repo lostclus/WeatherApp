@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Response
 from pydantic import BaseModel, TypeAdapter
 from pydantic_extra_types.timezone_name import TimeZoneName
+from weatherapp.protocol import PrecipitationUnit, TemperatureUnit, WindSpeedUnit
 from zoneinfo import ZoneInfo
 
 from ..models import Weather, WeatherDataField
@@ -18,6 +19,9 @@ class WeatherRequest(BaseModel):
     end_date: date
     fields: list[WeatherDataField] | None = None
     timezone: TimeZoneName = TimeZoneName("UTC")
+    temperature_unit: TemperatureUnit = TemperatureUnit.CELSIUS
+    wind_speed_unit: WindSpeedUnit = WindSpeedUnit.M_S
+    precipitation_unit: PrecipitationUnit = PrecipitationUnit.MILLIMETER
 
 
 @router.post("/weather", response_model=list[Weather])
@@ -48,6 +52,11 @@ async def weather(req: WeatherRequest, ch: ClickHouseDep) -> Response:
     data = adapter.dump_json(
         adapter.validate_python(objs),
         exclude_unset=True,
-        context={"timezone": tz},
+        context={
+            "timezone": tz,
+            "temperature_unit": req.temperature_unit,
+            "wind_speed_unit": req.wind_speed_unit,
+            "precipitation_unit": req.precipitation_unit,
+        },
     )
     return Response(content=data, media_type="application/json")

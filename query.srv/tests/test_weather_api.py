@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+from weatherapp.protocol import PrecipitationUnit, TemperatureUnit, WindSpeedUnit
 
 from weatherapp_query.models import WeatherDataField
 from weatherapp_query.storage.weather import add_weather
@@ -138,3 +139,88 @@ async def test_weather_fields(field, client, clickhouse_client, weather_object):
             field: response_data[0][field],
         },
     ]
+
+
+@pytest.mark.parametrize(
+    "unit,expect",
+    (
+        (TemperatureUnit.CELSIUS, 0.01),
+        (TemperatureUnit.FAHRENHEIT, 32.018),
+    ),
+)
+@pytest.mark.asyncio
+async def test_weather_temperature_unit(
+    unit, expect, client, clickhouse_client, weather_object
+):
+    await add_weather(clickhouse_client, weather_object)
+
+    request_data = {
+        "location_id": 1,
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "fields": ["temperature_2m"],
+        "temperature_unit": str(unit),
+    }
+
+    response = await client.post("/weather", json=request_data)
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data[0]["temperature_2m"] == expect
+
+
+@pytest.mark.parametrize(
+    "unit,expect",
+    (
+        (WindSpeedUnit.M_S, 0.19),
+        (WindSpeedUnit.KM_H, 0.684),
+        (WindSpeedUnit.KNOTS, 0.369330778),
+    ),
+)
+@pytest.mark.asyncio
+async def test_weather_wind_speed_unit(
+    unit, expect, client, clickhouse_client, weather_object
+):
+    await add_weather(clickhouse_client, weather_object)
+
+    request_data = {
+        "location_id": 1,
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "fields": ["wind_speed_10m"],
+        "wind_speed_unit": str(unit),
+    }
+
+    response = await client.post("/weather", json=request_data)
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data[0]["wind_speed_10m"] == expect
+
+
+@pytest.mark.parametrize(
+    "unit,expect",
+    (
+        (PrecipitationUnit.MILLIMETER, 0.06),
+        (PrecipitationUnit.INCH, 0.002362206),
+    ),
+)
+@pytest.mark.asyncio
+async def test_weather_precipitation_unit(
+    unit, expect, client, clickhouse_client, weather_object
+):
+    await add_weather(clickhouse_client, weather_object)
+
+    request_data = {
+        "location_id": 1,
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "fields": ["precipitation"],
+        "precipitation_unit": str(unit),
+    }
+
+    response = await client.post("/weather", json=request_data)
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data[0]["precipitation"] == expect
