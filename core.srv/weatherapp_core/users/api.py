@@ -8,7 +8,7 @@ from ninja.errors import HttpError, ValidationError
 from .models import User
 from .schema import UserCreateSchema, UserOutSchema, UserUpdateSchema
 
-users_router = Router()
+users_router = Router(tags=["users"])
 
 
 @users_router.post("/", response={HTTPStatus.CREATED: UserOutSchema}, auth=None)

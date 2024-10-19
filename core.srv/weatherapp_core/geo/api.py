@@ -10,7 +10,7 @@ from weatherapp_core.users.models import User
 from .models import Location
 from .schema import LocationInSchema, LocationOutSchema
 
-locations_router = Router()
+locations_router = Router(tags=["locations"])
 
 
 def _user_locations(request: HttpRequest) -> models.QuerySet[Location]:

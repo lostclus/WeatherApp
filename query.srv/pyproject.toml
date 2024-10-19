@@ -3,8 +3,11 @@ name = "weatherapp_query"
 authors = [
     {name = "Kostiantyn Korikov", email = "lostclus@gmail.com"},
 ]
-version = "0.0.0"
+dynamic = ["version"]
 description = "WeatherApp data query service"
+
+[tool.setuptools.dynamic]
+version = {attr = "weatherapp_query.__version__"}
 
 [tool.black]
 target-version = ["py312"]

@@ -19,13 +19,19 @@ from django.contrib import admin
 from django.urls import path
 from ninja import NinjaAPI
 
+from weatherapp_core import __version__
 from weatherapp_core.geo.api import locations_router
 from weatherapp_core.jwtauth.api import auth_router
 from weatherapp_core.jwtauth.auth import async_auth_request
 from weatherapp_core.uihelpers.api import uihelpers_router
 from weatherapp_core.users.api import users_router
 
-api = NinjaAPI(auth=async_auth_request)
+api = NinjaAPI(
+    title="WeatherApp Core API",
+    version=__version__,
+    auth=async_auth_request,
+)
+
 api.add_router("", uihelpers_router)
 api.add_router("/token/", auth_router)
 api.add_router("/users/", users_router)

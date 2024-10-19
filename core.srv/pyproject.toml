@@ -3,8 +3,11 @@ name = "weatherapp_core"
 authors = [
     {name = "Kostiantyn Korikov", email = "lostclus@gmail.com"},
 ]
-version = "0.0.0"
+dynamic = ["version"]
 description = "WeatherApp core service"
+
+[tool.setuptools.dynamic]
+version = {attr = "weatherapp_core.__version__"}
 
 [tool.black]
 target-version = ["py312"]

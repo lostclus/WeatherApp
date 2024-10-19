@@ -10,7 +10,7 @@ from weatherapp_core.users.models import User
 from .logic import create_token_for_user, decode_token
 from .schema import TokenCreateSchema, TokenOutSchema, TokenRefreshSchema, TokenType
 
-auth_router = Router()
+auth_router = Router(tags=["auth"])
 
 
 @auth_router.post("/", response=TokenOutSchema, auth=None)
