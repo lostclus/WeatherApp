@@ -1,13 +1,13 @@
 aiochclient[aiohttp]
-aiokafka
 fastapi
-git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]
 httpx
 ipython
 pydantic
+pydantic-extra-types
 pydantic-settings
 pytest
 pytest-asyncio
 pytest-cov
 sentry-sdk[arq]
+tzdata
 uvicorn[standard]

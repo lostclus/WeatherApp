@@ -1,6 +1,6 @@
 import pytest
 from kafkastreamer import send
-from weatherapp.protocol.bus import Location as LocationProto
+from weatherapp.protocol import Location as LocationProto
 
 from .utils import patch_kafka_producer
 

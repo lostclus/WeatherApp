@@ -3,13 +3,12 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from weatherapp.protocol.bus import Location, User
+from weatherapp.protocol import Location, User
 from weatherapp.protocol.types import (
     DateFormat,
     PrecipitationUnit,
     TemperatureUnit,
     TimeFormat,
-    TimeZone,
     WindSpeedUnit,
 )
 
@@ -54,8 +53,6 @@ def test_location_invalid_longitude():
 
 
 def test_user():
-    assert TimeZone.UTC == "UTC"
-
     user = User(
         id=1,
         email="test@example.com",
@@ -66,7 +63,7 @@ def test_user():
         is_staff=False,
         is_active=True,
         date_joined="2024-01-01T00:00:00+00:00",
-        timezone=TimeZone.UTC,
+        timezone="UTC",
         temperature_unit=TemperatureUnit.CELSIUS,
         wind_speed_unit=WindSpeedUnit.M_S,
         precipitation_unit=PrecipitationUnit.MILLIMETER,
@@ -88,7 +85,7 @@ def test_user_invalid_email():
             is_staff=False,
             is_active=True,
             date_joined="2024-01-01T00:00:00+00:00",
-            timezone=TimeZone.UTC,
+            timezone="UTC",
             temperature_unit=TemperatureUnit.CELSIUS,
             wind_speed_unit=WindSpeedUnit.M_S,
             precipitation_unit=PrecipitationUnit.MILLIMETER,

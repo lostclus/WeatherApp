@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator, Callable, Sequence
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 if not TYPE_CHECKING:
@@ -40,6 +41,14 @@ def encode_boolean(value: bool | None) -> int:
     return int(value)
 
 
+def encode_datetime(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo:
+        value = value.astimezone(UTC).replace(tzinfo=None)
+    return value
+
+
 def build_filters(
     filters: dict[str, Any],
     *fields: str,
@@ -54,6 +63,8 @@ def build_filters(
             value = func(value)
         elif type(value) is bool:
             value = encode_boolean(value)
+        elif isinstance(value, datetime):
+            value = encode_datetime(value)
         return value
 
     ignore_filters = ignore_filters or []

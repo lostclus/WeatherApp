@@ -56,7 +56,26 @@ async def test_weather(client, clickhouse_client, weather_object):
 
 
 @pytest.mark.asyncio
-async def test_weather_date_filter(client, clickhouse_client, weather_object):
+async def test_weather_timezone(client, clickhouse_client, weather_object):
+    await add_weather(clickhouse_client, weather_object)
+
+    request_data = {
+        "location_id": 1,
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "timezone": "Europe/Kyiv",
+    }
+
+    response = await client.post("/weather", json=request_data)
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data[0]["timestamp"] == "2024-01-01T02:00:00"
+
+
+@pytest.mark.parametrize("tz_name", ["UTC", "Europe/Kyiv"])
+@pytest.mark.asyncio
+async def test_weather_date_filter(tz_name, client, clickhouse_client, weather_object):
     def gen_houry_timestamps(start, end):
         result = []
         ts = start
@@ -80,6 +99,7 @@ async def test_weather_date_filter(client, clickhouse_client, weather_object):
         "start_date": "2024-01-02",
         "end_date": "2024-01-03",
         "fields": ["temperature_2m"],
+        "timezone": tz_name,
     }
 
     response = await client.post("/weather", json=request_data)

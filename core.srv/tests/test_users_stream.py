@@ -1,6 +1,6 @@
 import pytest
 from kafkastreamer import send
-from weatherapp.protocol.bus import User as UserProto
+from weatherapp.protocol import User as UserProto
 
 from .utils import patch_kafka_producer
 

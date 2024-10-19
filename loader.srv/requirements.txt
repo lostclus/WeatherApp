@@ -1,7 +1,7 @@
 aiohappyeyeballs==2.4.3
 aiohttp==3.10.10
 aiokafka==0.11.0
-aiosafeconsumer @ git+https://github.com/lostclus/aiosafeconsumer.git@80a7c176d18a6c67aa4c0325df4dfde6f26c93f8
+aiosafeconsumer==0.0.1
 aiosignal==1.3.1
 annotated-types==0.7.0
 anyio==4.6.2.post1
@@ -36,6 +36,7 @@ propcache==0.2.0
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pydantic==2.9.2
+pydantic-extra-types==2.9.0
 pydantic_core==2.23.4
 Pygments==2.18.0
 pytest==8.3.3
@@ -52,12 +53,13 @@ sniffio==1.3.1
 stack-data==0.6.3
 traitlets==5.14.3
 typing_extensions==4.12.2
+tzdata==2024.2
 urllib3==2.2.3
 uvicorn==0.32.0
 uvloop==0.21.0
 watchfiles==0.24.0
 wcwidth==0.2.13
 websockets==13.1
-yarl==1.15.4
+yarl==1.15.5
 -e ../protocol.lib
 -e ../stubs.lib

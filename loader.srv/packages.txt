@@ -1,8 +1,8 @@
 aiohttp
 aiokafka
+aiosafeconsumer[kafka,redis]
 arq
 click
-git+https://github.com/lostclus/aiosafeconsumer.git#egg=aiosafeconsumer[kafka]
 ipython
 pytest
 pytest-asyncio

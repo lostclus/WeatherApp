@@ -34,6 +34,7 @@ psycopg-binary==3.2.3
 ptyprocess==0.7.0
 pure_eval==0.2.3
 pydantic==2.9.2
+pydantic-extra-types==2.9.0
 pydantic_core==2.23.4
 Pygments==2.18.0
 PyJWT==2.9.0
@@ -42,7 +43,7 @@ pytest-asyncio==0.24.0
 pytest-django==4.9.0
 python-dateutil==2.9.0.post0
 redis==5.1.1
-sentry-sdk==2.16.0
+sentry-sdk==2.17.0
 six==1.16.0
 sqlparse==0.5.1
 stack-data==0.6.3
@@ -50,7 +51,7 @@ traitlets==5.14.3
 typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3
-uvicorn==0.31.1
+uvicorn==0.32.0
 vine==5.1.0
 wcwidth==0.2.13
 -e ../protocol.lib

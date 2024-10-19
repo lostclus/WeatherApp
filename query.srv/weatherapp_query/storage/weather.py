@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, datetime
 
 from ..models import Weather, WeatherDataField
 from .clickhouse import ClickHouseClient, build_filters
@@ -8,18 +8,16 @@ from .clickhouse import ClickHouseClient, build_filters
 async def get_weather(
     ch: ClickHouseClient,
     location_ids: Sequence[int],
-    start_date: date,
-    end_date: date,
+    timestamp_start: datetime,
+    timestamp_end: datetime,
     fields: Sequence[WeatherDataField] | None = None,
 ) -> list[Weather]:
-    start_dt = datetime(start_date.year, start_date.month, start_date.day)
-    end_dt = datetime(end_date.year, end_date.month, end_date.day)
     fields = fields or list(WeatherDataField)
 
     filters = {
         "location_id__in": location_ids,
-        "timestamp__gte": start_dt,
-        "timestamp__lt": end_dt + timedelta(days=1),
+        "timestamp__gte": timestamp_start,
+        "timestamp__lt": timestamp_end,
     }
 
     all_fields = set(Weather.model_fields.keys())
@@ -34,6 +32,7 @@ async def get_weather(
         FROM (
             SELECT {select_fields_sql} FROM weather
             PREWHERE {filters_sql}
+            ORDER BY _time DESC
             LIMIT 1 BY (timestamp, location_id)
         )
         ORDER BY timestamp
