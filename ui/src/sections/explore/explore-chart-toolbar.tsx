@@ -50,7 +50,7 @@ export function ExploreChartToolbar(
 	  onChange={onLocationChange}
 	>
 	  {locations.map((loc) => (
-	    <MenuItem value={loc.id}>{loc.name}</MenuItem>
+	    <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
 	  ))}
 	</Select>
       </FormControl>

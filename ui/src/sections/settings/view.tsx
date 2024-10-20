@@ -43,14 +43,16 @@ function SelectControl(
     choices,
   }: SelectControlProps
 ) {
-  const labelId = `${name}-label`;
+  const labelId = `${name}-label-id`;
+  const elemId = `${name}-id`;
   return (
     <FormControl>
       <InputLabel id={labelId}>{label}</InputLabel>
       <Select
+	labelId={labelId}
+        id={elemId}
 	name={name}
 	label={label}
-	labelId={labelId}
 	autoWidth
 	value={value}
 	onChange={onChange}
@@ -173,7 +175,7 @@ export function SettingsView() {
 	  <SelectControl
 	    name="defaultLocationId"
 	    label="Default Location"
-	    value={formUser.defaultLocationId}
+	    value={(formUser.defaultLocationId in locationChoices) ? formUser.defaultLocationId : ""}
 	    onChange={handleChange}
 	    choices={locationChoices}
 	  />
