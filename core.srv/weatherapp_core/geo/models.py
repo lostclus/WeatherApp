@@ -17,7 +17,6 @@ class Location(models.Model):
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
     )
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -27,13 +26,28 @@ class Location(models.Model):
                 fields=["user", "name"],
                 nulls_distinct=False,
             ),
-            models.UniqueConstraint(
-                name="unique_user_is_default",
-                fields=["user", "is_default"],
-                nulls_distinct=False,
-                condition=models.Q(is_default=True),
-            ),
         ]
 
     def __str__(self) -> str:
         return self.name
+
+    async def aget_default_for(self, user: User) -> bool:
+        return await self.default_for.filter(user=user).aexists()
+
+    async def aset_default_for(self, user: User) -> None:
+        await DefaultLocation.objects.aupdate_or_create(
+            user=user,
+            defaults={"location": self},
+        )
+
+
+class DefaultLocation(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="default_location"
+    )
+    location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name="default_for"
+    )
+
+    def __str__(self) -> str:
+        return str(self.location)

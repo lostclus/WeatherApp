@@ -7,20 +7,27 @@ from ninja import Router
 
 from weatherapp_core.users.models import User
 
-from .models import Location
+from .models import DefaultLocation, Location
 from .schema import LocationInSchema, LocationOutSchema
 
 locations_router = Router(tags=["locations"])
 
 
-def _user_locations(request: HttpRequest) -> models.QuerySet[Location]:
-    user = request.user
-    assert isinstance(user, User)
+def _user_locations(user: User, only_my: bool = False) -> models.QuerySet[Location]:
     queryset = Location.objects.all()
     queryset_my = queryset.filter(user=user)
     queryset_sys = queryset.filter(user=None)
-    queryset = queryset_my | queryset_sys
-    return queryset
+
+    if only_my:
+        queryset = queryset_my
+    else:
+        queryset = queryset_my | queryset_sys
+
+    return queryset.annotate(
+        is_default=models.Exists(
+            DefaultLocation.objects.filter(user=user, location=models.OuterRef("pk"))
+        )
+    )
 
 
 @locations_router.post("/", response={HTTPStatus.CREATED: LocationOutSchema})
@@ -28,17 +35,21 @@ async def create_location(request: HttpRequest, payload: LocationInSchema) -> Lo
     user = request.user
     assert isinstance(user, User)
 
-    if payload.is_default:  # type: ignore
-        queryset = _user_locations(request)
-        await queryset.filter(user=user).aupdate(is_default=False)
+    kw = payload.dict()
+    is_default = kw.pop("is_default")
+    loc = await Location.objects.acreate(user=user, **kw)
+    if is_default:
+        await loc.aset_default_for(user)
+    loc.is_default = is_default  # type: ignore
 
-    loc = await Location.objects.acreate(user=user, **payload.dict())
     return loc
 
 
 @locations_router.get("/", response=list[LocationOutSchema])
 async def list_locations(request: HttpRequest) -> list[Location]:
-    queryset = _user_locations(request).select_related("user")
+    user = request.user
+    assert isinstance(user, User)
+    queryset = _user_locations(user).select_related("user")
     return [obj async for obj in queryset]
 
 
@@ -46,13 +57,17 @@ async def list_locations(request: HttpRequest) -> list[Location]:
 async def list_my_locations(request: HttpRequest) -> list[Location]:
     user = request.user
     assert isinstance(user, User)
-    queryset = _user_locations(request).filter(user=user)
+
+    queryset = _user_locations(user, only_my=True).select_related("user")
     return [obj async for obj in queryset]
 
 
 @locations_router.get("/{int:location_id}", response=LocationOutSchema)
 async def get_location(request: HttpRequest, location_id: int) -> Location:
-    queryset = _user_locations(request)
+    user = request.user
+    assert isinstance(user, User)
+
+    queryset = _user_locations(user)
     loc = await aget_object_or_404(queryset, pk=location_id)
     return loc
 
@@ -61,23 +76,31 @@ async def get_location(request: HttpRequest, location_id: int) -> Location:
 async def update_location(
     request: HttpRequest, location_id: int, payload: LocationInSchema
 ) -> Location:
-    queryset = _user_locations(request)
+    user = request.user
+    assert isinstance(user, User)
+
+    queryset = _user_locations(user)
     loc = await aget_object_or_404(queryset, pk=location_id)
 
-    if payload.is_default:  # type: ignore
-        user = request.user
-        assert isinstance(user, User)
-        await queryset.filter(user=user).exclude(pk=loc.pk).aupdate(is_default=False)
+    kw = payload.dict()
+    is_default = kw.pop("is_default")
 
-    for attr, value in payload.dict().items():
+    for attr, value in kw.items():
         setattr(loc, attr, value)
+
     await loc.asave()
+
+    if is_default:
+        await loc.aset_default_for(user)
 
     return loc
 
 
 @locations_router.delete("/{int:location_id}", response={HTTPStatus.NO_CONTENT: None})
 async def delete_location(request: HttpRequest, location_id: int) -> None:
-    queryset = _user_locations(request)
+    user = request.user
+    assert isinstance(user, User)
+
+    queryset = _user_locations(user)
     loc = await aget_object_or_404(queryset, pk=location_id)
     await loc.adelete()

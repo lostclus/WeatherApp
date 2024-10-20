@@ -2,7 +2,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as OrigUserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from weatherapp_core.geo.models import DefaultLocation
+
 from .models import User
+
+
+class DefaultLocationInline(admin.StackedInline):
+    model = DefaultLocation
 
 
 @admin.register(User)
@@ -48,3 +54,4 @@ class UserAdmin(OrigUserAdmin):
             },
         ),
     )
+    inlines = (DefaultLocationInline,)

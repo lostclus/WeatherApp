@@ -32,7 +32,6 @@ class Location(BaseModel):
     latitude: Decimal = Field(ge=-90, le=90)
     longitude: Decimal = Field(ge=-180, le=180)
     user_id: int | None
-    is_default: bool
     is_active: bool
 
     model_config = ConfigDict(extra="forbid")

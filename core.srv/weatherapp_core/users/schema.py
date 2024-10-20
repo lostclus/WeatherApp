@@ -26,6 +26,8 @@ class UserCreateSchema(ModelSchema):
 
 
 class UserUpdateSchema(ModelSchema):
+    default_location_id: int | None = None
+
     class Config:
         model = User
         model_fields = [
@@ -40,6 +42,8 @@ class UserUpdateSchema(ModelSchema):
 
 
 class UserOutSchema(ModelSchema):
+    default_location_id: int | None
+
     class Config:
         model = User
         model_fields = [

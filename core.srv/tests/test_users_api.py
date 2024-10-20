@@ -40,6 +40,7 @@ async def test_user_create(async_client, password):
         "time_format": "HH:mm",
         "timezone": "UTC",
         "wind_speed_unit": "m/s",
+        "default_location_id": None,
     }
 
     user = await User.objects.aget(pk=user_id)
@@ -143,6 +144,7 @@ async def test_user_get(async_client, user, auth_headers):
         "time_format": "HH:mm",
         "timezone": "UTC",
         "wind_speed_unit": "m/s",
+        "default_location_id": None,
     }
 
 
@@ -190,7 +192,37 @@ async def test_user_update(async_client, user, auth_headers):
         "time_format": "HH:mm",
         "timezone": "UTC",
         "wind_speed_unit": "m/s",
+        "default_location_id": None,
     }
+
+
+@pytest.mark.asyncio
+async def test_user_update_default_location(async_client, user, auth_headers, location):
+    response = await async_client.patch(
+        f"/core/api/v1/users/{user.pk}",
+        data={
+            "default_location_id": location.pk,
+        },
+        content_type="application/json",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data == {
+        "id": user.pk,
+        "email": "test@example.com",
+        "date_format": "YYYY-MM-DD",
+        "precipitation_unit": "millimeter",
+        "temperature_unit": "celsius",
+        "time_format": "HH:mm",
+        "timezone": "UTC",
+        "wind_speed_unit": "m/s",
+        "default_location_id": location.pk,
+    }
+
+    assert await location.aget_default_for(user)
 
 
 @pytest.mark.asyncio

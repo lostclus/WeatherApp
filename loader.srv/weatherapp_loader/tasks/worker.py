@@ -31,9 +31,7 @@ def main() -> int:
     loop = asyncio.get_event_loop()
 
     workers = [
-        arq.worker.create_worker(
-            WorkerSettings, redis_pool=get_arq_pool()
-        ),
+        arq.worker.create_worker(WorkerSettings, redis_pool=get_arq_pool()),
     ]
 
     try:

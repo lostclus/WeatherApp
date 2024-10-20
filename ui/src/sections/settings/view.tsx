@@ -1,7 +1,8 @@
+import type { User } from 'src/client/users'
 import type { ServerErrors } from 'src/client/types';
+import type { Location_ } from 'src/client/locations';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 
-import axios from "axios";
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
@@ -14,29 +15,23 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import FormControl from '@mui/material/FormControl';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { CONFIG } from 'src/config-global';
 import { FormErrors } from 'src/client/forms';
 import { useAuth } from "src/client/auth-provider";
+import { getLocations } from 'src/client/locations';
+import { getUser, updateUser } from 'src/client/users';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useServerConstants } from 'src/client/server-constants-provider';
 
 // ----------------------------------------------------------------------
 
-type FormData = {
-  timezone: string,
-  temperature_unit: string,
-  wind_speed_unit: string,
-  precipitation_unit: string,
-  date_format: string,
-  time_format: string
-};
+type Choices = { [key: string]: string };
 
 type SelectControlProps = {
   name: string,
   label: string,
   value: string,
   onChange: (element: any) => void,
-  choices: { [index: string]: string},
+  choices: Choices,
 };
 
 function SelectControl(
@@ -75,63 +70,56 @@ function SelectControl(
 export function SettingsView() {
   const { user } = useAuth();
   const serverConstants = useServerConstants();
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const [locationChoices, setLocationChoices] = useState<Choices>({});
+  const [formUser, setFormUser] = useState<User | null>(null);
   const [errors, setErrors] = useState<FormErrors>(new FormErrors());
 
   if (!user)
     throw Error("Not authenticated");
 
   useEffect(() => {
-    axios.get(`${CONFIG.api.coreURL}/v1/users/${user.id}`)
-    .then(
-      (response) => {
-	const newData = response.data as FormData;
-	setFormData(newData);
+    getLocations(
+      (newLocations: Location_[]) => {
+	const choices = Object.fromEntries(newLocations.map((loc) => [loc.id, loc.name]));
+	setLocationChoices(choices);
       }
-    )
+    );
+  }, []);
+
+  useEffect(() => {
+    getUser(user.id, (newUser: User) => setFormUser(newUser));
   }, [user]);
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
-    const newData = { ...formData, [name]: value } as FormData;
-    setFormData(newData);
+    const newUser = { ...formUser, [name]: value } as User;
+    setFormUser(newUser);
   }
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
+    if (!formUser) return;
     const newErrors = new FormErrors();
 
     if (newErrors.hasErrors()) {
       setErrors(newErrors);
     } else {
-      const data = formData;
-      setFormData(null);
-      axios(
-	{
-	  method: 'patch',
-	  url: `${CONFIG.api.coreURL}/v1/users/${user.id}`,
-	  data,
-	}
-      )
-      .then(
-	(response) => {
-	  const newData = response.data as FormData;
-	  setFormData(newData);
-	}
-      )
-      .catch(
-	(error) => {
-	  const serverErrors: ServerErrors = error.response.data;
+      updateUser(
+	formUser, 
+	(newUser: User) => {
+	  setFormUser(newUser);
+	},
+	(serverErrors: ServerErrors) => {
 	  newErrors.addFromServer(serverErrors);
 	  setErrors(newErrors);
-	}
-      );
+	},
+      )
     }
   }
 
   const renderForm = (
     <Box display="flex" flexDirection="column">
-    {(!formData) ? <CircularProgress/> : (
+    {(!formUser) ? <CircularProgress/> : (
       <form>
 	<Stack spacing={2}>
 	  {
@@ -143,44 +131,51 @@ export function SettingsView() {
 	  <SelectControl
 	    name="timezone"
 	    label="Timezone"
-	    value={formData.timezone}
+	    value={formUser.timezone}
 	    onChange={handleChange}
 	    choices={serverConstants.timezones}
 	  />
 	  <SelectControl
-	    name="temperature_unit"
+	    name="temperatureUnit"
 	    label="Temperature Unit"
-	    value={formData.temperature_unit}
+	    value={formUser.temperatureUnit}
 	    onChange={handleChange}
 	    choices={serverConstants.temperatureUnits}
 	  />
 	  <SelectControl
-	    name="wind_speed_unit"
+	    name="windSpeedUnit"
 	    label="Wind Speed Unit"
-	    value={formData.wind_speed_unit}
+	    value={formUser.windSpeedUnit}
 	    onChange={handleChange}
 	    choices={serverConstants.windSpeedUnits}
 	  />
 	  <SelectControl
-	    name="precipitation_unit"
+	    name="precipitationUnit"
 	    label="Precipitation Unit"
-	    value={formData.precipitation_unit}
+	    value={formUser.precipitationUnit}
 	    onChange={handleChange}
 	    choices={serverConstants.precipitationUnits}
 	  />
 	  <SelectControl
-	    name="date_format"
+	    name="dateFormat"
 	    label="Date Format"
-	    value={formData.date_format}
+	    value={formUser.dateFormat}
 	    onChange={handleChange}
 	    choices={serverConstants.dateFormats}
 	  />
 	  <SelectControl
-	    name="time_format"
+	    name="timeFormat"
 	    label="Time Format"
-	    value={formData.time_format}
+	    value={formUser.timeFormat}
 	    onChange={handleChange}
 	    choices={serverConstants.timeFormats}
+	  />
+	  <SelectControl
+	    name="defaultLocationId"
+	    label="Default Location"
+	    value={formUser.defaultLocationId}
+	    onChange={handleChange}
+	    choices={locationChoices}
 	  />
 
 	  <LoadingButton

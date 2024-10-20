@@ -38,9 +38,45 @@ def test_location_create(client, user, auth_headers):
     assert location.name == "Test location"
     assert location.latitude == Decimal("1.23")
     assert location.longitude == Decimal("4.56")
-    assert location.is_default is False
     assert location.is_active is True
     assert location.user == user
+
+
+def test_location_create_is_default(client, user, auth_headers):
+    response = client.post(
+        "/core/api/v1/locations/",
+        data={
+            "name": "Test location",
+            "latitude": "1.23",
+            "longitude": "4.56",
+            "is_default": True,
+        },
+        content_type="application/json",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 201, response.content
+    response_data = response.json()
+
+    location_id = response_data["id"]
+
+    assert response_data == {
+        "id": location_id,
+        "name": "Test location",
+        "latitude": "1.23",
+        "longitude": "4.56",
+        "is_default": True,
+        "is_active": True,
+        "user": user.pk,
+    }
+
+    location = Location.objects.get(pk=location_id)
+    assert location.name == "Test location"
+    assert location.latitude == Decimal("1.23")
+    assert location.longitude == Decimal("4.56")
+    assert location.is_active is True
+    assert location.user == user
+    assert location.default_for.filter(user=user).exists()
 
 
 def test_location_create_invalid_latitude(client, user, auth_headers):
@@ -98,6 +134,28 @@ def test_location_get_system(client, user, auth_headers, location):
         "is_default": False,
         "is_active": True,
         "user": None,
+    }
+
+
+def test_location_get_is_default(client, user, auth_headers, location):
+    location.default_for.create(user=user)
+
+    response = client.get(
+        f"/core/api/v1/locations/{location.pk}",
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert response_data == {
+        "id": location.pk,
+        "name": "Null island",
+        "latitude": "0.00000",
+        "longitude": "0.00000",
+        "is_default": True,
+        "is_active": True,
+        "user": user.pk,
     }
 
 

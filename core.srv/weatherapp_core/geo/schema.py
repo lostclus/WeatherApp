@@ -10,6 +10,7 @@ class LocationInSchema(ModelSchema):
     name: str = Field(max_length=200)
     latitude: Decimal = Field(ge=-90, le=90)
     longitude: Decimal = Field(ge=-180, le=180)
+    is_default: bool = False
 
     class Config:
         model = Location
@@ -17,12 +18,13 @@ class LocationInSchema(ModelSchema):
             "name",
             "latitude",
             "longitude",
-            "is_default",
             "is_active",
         ]
 
 
 class LocationOutSchema(ModelSchema):
+    is_default: bool
+
     class Config:
         model = Location
         model_fields = [
@@ -31,6 +33,5 @@ class LocationOutSchema(ModelSchema):
             "latitude",
             "longitude",
             "user",
-            "is_default",
             "is_active",
         ]
