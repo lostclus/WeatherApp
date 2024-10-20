@@ -116,6 +116,13 @@ services:
 
   core-worker:
     <<: *core-config
+    depends_on:
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     ports: []
     command: celery -A weatherapp_core.celery worker -B -c 1
 
@@ -123,6 +130,11 @@ services:
     <<: *core-config
     ports: []
     command: python manage.py migrate
+
+  core-stream:
+    <<: *core-config
+    ports: []
+    command: python manage.py kafkastreamer_refresh
 
   core-test:
     <<: *core-config
@@ -152,6 +164,10 @@ services:
   loader-tasks:
     <<: *loader-config
     command: python -m weatherapp_loader.tasks.worker
+
+  loader-stream:
+    <<: *loader-config
+    command: python -m weatherapp_loader.tasks.run stream-weather
 
   loader-test:
     <<: *loader-config
