@@ -76,7 +76,7 @@ export function AuthProvider({ children }: Props) {
     if (contextValue.token) {
       const timerId = setTimeout(
         refreshTokenOnTimeout,
-        contextValue.token.refreshDelay - 10000,
+        contextValue.token.refreshDelay / 2,
         contextValue.token.refresh,
         contextValue
       );
