@@ -1,4 +1,3 @@
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
 
@@ -15,10 +14,16 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
+    title: 'Explore',
+    path: '/explore',
+    icon: icon('ic-analytics'),
+  },
+  {
     title: 'Locations',
     path: '/locations',
     icon: icon('ic-user'),
   },
+  /*
   {
     title: 'Product',
     path: '/products',
@@ -29,11 +34,7 @@ export const navData = [
       </Label>
     ),
   },
-  {
-    title: 'Blog',
-    path: '/blog',
-    icon: icon('ic-blog'),
-  },
+  */
   {
     title: 'Settings',
     path: '/settings',

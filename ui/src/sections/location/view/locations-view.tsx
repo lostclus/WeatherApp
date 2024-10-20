@@ -1,6 +1,6 @@
-import type { Location_, ServerErrors } from 'src/client/types';
+import type { ServerErrors } from 'src/client/types';
+import type { Location_ } from 'src/client/locations';
 
-import axios from "axios";
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -12,9 +12,9 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { CONFIG } from 'src/config-global';
 import { FormErrors } from 'src/client/forms';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { createLocation, updateLocation, deleteLocation, getMyLocations } from 'src/client/locations';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -36,15 +36,6 @@ const nullLocation: Location_ = {
     isActive: true,
 };
 
-type LocationServerProps = {
-  id: string;
-  name: string;
-  latitude: string;
-  longitude: string;
-  is_default: boolean;
-  is_active: boolean;
-};
-
 // ----------------------------------------------------------------------
 
 export function LocationsView() {
@@ -59,30 +50,17 @@ export function LocationsView() {
   const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
-    axios.get(`${CONFIG.api.coreURL}/v1/locations/my`)
-    .then(
-      (response) => {
-	const newLocations = response.data.map(
-          ({ id, name, latitude, longitude, is_default, is_active }: LocationServerProps) => {
-            const loc: Location_ = {
-              id, name, latitude, longitude, isDefault: is_default, isActive: is_active
-            };
-            return loc;
-          }
-        );
-	setLocations(newLocations);
-      }
-    )
+    getMyLocations((newLocations) => setLocations(newLocations));
   }, [refreshCount]);
 
-  const createLocation = () => {
+  const handleAddLocation = () => {
     if (!locations) return;
     setDialogData(nullLocation);
     setDialogCreation(true);
     setDialogOpen(true);
   };
 
-  const editLocation = (locationId: string) => {
+  const handleEditLocation = (locationId: string) => {
     if (!locations) return;
     locations.filter(
       (loc) => loc.id === locationId
@@ -91,24 +69,14 @@ export function LocationsView() {
     setDialogOpen(true);
   };
 
-  const deleteLocation = (locationId: string) => {
+  const handleDeleteLocation = (locationId: string) => {
     if (!locations) return;
-    axios.delete(`${CONFIG.api.coreURL}/v1/locations/${locationId}`)
-    .then(
-      () => {
-	setRefreshCount(refreshCount + 1);
-      }
-    );
+    deleteLocation(locationId, () => setRefreshCount(refreshCount + 1));
   };
 
-  const deleteManyLocations = (locationIds: string[]) => {
+  const handleDeleteManyLocations = (locationIds: string[]) => {
     locationIds.forEach((locationId) => {
-      axios.delete(`${CONFIG.api.coreURL}/v1/locations/${locationId}`)
-      .then(
-	() => {
-	  setRefreshCount(refreshCount + 1);
-	}
-      );
+      deleteLocation(locationId, () => setRefreshCount(refreshCount + 1));
     });
   }
 
@@ -126,34 +94,31 @@ export function LocationsView() {
       return;
     }
 
-    const { id, name, latitude, longitude, isDefault, isActive } = dialogData;
-    const serverLoc: LocationServerProps = {
-      id, name, latitude, longitude, is_default: isDefault, is_active: isActive,
-    };
-
-    const req = (isDialogCreation) ? (
-      axios.post(
-	`${CONFIG.api.coreURL}/v1/locations/`, serverLoc
-      )
-    ) : (
-      axios.put(
-	`${CONFIG.api.coreURL}/v1/locations/${id}`, serverLoc
-      )
-    );
-    req.then((result) => {
-      setLocations(locations);
+    const onSuccess = (loc: Location_) => {
       setDialogOpen(false);
       newErrors.clear();
       setDialogErrors(newErrors);
       setRefreshCount(refreshCount + 1);
-    })
-    .catch(
-      (error) => {
-	const serverErrors: ServerErrors = error.response.data;
-	newErrors.addFromServer(serverErrors);
-	setDialogErrors(newErrors);
-      }
-    );
+    };
+
+    const onError = (serverErrors: ServerErrors) => {
+      newErrors.addFromServer(serverErrors);
+      setDialogErrors(newErrors);
+    }
+
+    if (isDialogCreation) {
+      createLocation(
+	dialogData,
+	onSuccess,
+	onError,
+      );
+    } else {
+      updateLocation(
+	dialogData,
+	onSuccess,
+	onError,
+      );
+    }
   }
 
   const dataFiltered: Location_[] = applyFilter({
@@ -174,7 +139,7 @@ export function LocationsView() {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
-	  onClick={createLocation}
+	  onClick={handleAddLocation}
         >
           New location
         </Button>
@@ -188,7 +153,7 @@ export function LocationsView() {
             setFilterName(event.target.value);
             table.onResetPage();
           }}
-	  onDeleteMany={() => deleteManyLocations(table.selected)}
+	  onDeleteMany={() => handleDeleteManyLocations(table.selected)}
         />
 
         <Scrollbar>
@@ -226,8 +191,8 @@ export function LocationsView() {
                         row={row}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
-                        handleEdit={() => editLocation(row.id)}
-                        handleDelete={() => deleteLocation(row.id)}
+                        handleEdit={() => handleEditLocation(row.id)}
+                        handleDelete={() => handleDeleteLocation(row.id)}
                       />
                     ))}
 

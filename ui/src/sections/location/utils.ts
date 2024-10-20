@@ -1,4 +1,4 @@
-import type { Location_ } from 'src/client/types';
+import type { Location_ } from 'src/client/locations';
 
 // ----------------------------------------------------------------------
 

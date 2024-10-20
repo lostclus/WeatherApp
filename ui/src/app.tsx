@@ -1,5 +1,8 @@
 import 'src/global.css';
 
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
 import { Router } from 'src/routes/sections';
 
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
@@ -16,11 +19,13 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <AuthProvider>
-	<ServerConstantsProvider>
-	  <Router />
-	</ServerConstantsProvider>
-      </AuthProvider>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+	<AuthProvider>
+	  <ServerConstantsProvider>
+	    <Router />
+	  </ServerConstantsProvider>
+	</AuthProvider>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }

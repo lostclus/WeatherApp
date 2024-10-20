@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
-import type { Location_ } from 'src/client/types';
 import type { FormErrors } from 'src/client/forms';
+import type { Location_ } from 'src/client/locations';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';

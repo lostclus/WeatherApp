@@ -15,7 +15,7 @@ import { ProtectedRoute } from './protected-route';
 // ----------------------------------------------------------------------
 
 export const HomePage = lazy(() => import('src/pages/home'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
+export const ExplorePage = lazy(() => import('src/pages/explore'));
 export const LocationsPage = lazy(() => import('src/pages/locations'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const SignUpPage = lazy(() => import('src/pages/sign-up'));
@@ -73,7 +73,7 @@ export function Router() {
       children: [
         { path: 'locations', element: <LocationsPage /> },
         { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        { path: 'explore', element: <ExplorePage /> },
         { path: 'settings', element: <SettingsPage /> },
       ],
     },

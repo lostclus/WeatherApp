@@ -206,6 +206,7 @@ services:
       - ./ui/src:/app/src
     environment:
       VITE_CORE_API_BASE_URL: "http://localhost:3000/core/api"
+      VITE_QUERY_API_BASE_URL: "http://localhost:3000/query/api"
 
     ports:
       - "3039:3039"
