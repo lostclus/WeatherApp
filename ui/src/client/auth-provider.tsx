@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useMemo, useState, useEffect, useContext, createContext } from "react";
 
-import type { AuthInfo, AuthStore, AuthResponse} from "./types";
+import { refreshJwtToken } from "./auth";
 
+import type { AuthInfo, AuthStore, AuthResponse, AuthCallbackInfo} from "./auth";
 
 const nullAuth: AuthInfo = {
   token: null,
@@ -12,6 +13,14 @@ const nullAuth: AuthInfo = {
 };
 
 const AuthContext = createContext<AuthInfo>(nullAuth);
+
+function refreshTokenOnTimeout(tokenRefresh: string, callbacks: AuthCallbackInfo): void {
+  refreshJwtToken(
+    tokenRefresh,
+    (resp: AuthResponse) => callbacks.setAuthenticated(resp),
+    () => callbacks.dropAuthenticated(),
+  );
+};
 
 type Props = {
   children: React.ReactNode;
@@ -26,6 +35,7 @@ export function AuthProvider({ children }: Props) {
       token: {
 	access: response.token_access,
 	refresh: response.token_refresh,
+	refreshDelay: response.token_access_life_time * 1000,
       },
       user: {
 	id: response.user_id,
@@ -61,6 +71,20 @@ export function AuthProvider({ children }: Props) {
     }),
     [store]
   );
+
+  useEffect(() => {
+    if (contextValue.token) {
+      const timerId = setTimeout(
+        refreshTokenOnTimeout,
+        contextValue.token.refreshDelay - 10000,
+        contextValue.token.refresh,
+        contextValue
+      );
+      return () => clearTimeout(timerId);
+    }
+    return () => null;
+  }, [contextValue]);
+
 
   // Provide the authentication context to the children components
   return (

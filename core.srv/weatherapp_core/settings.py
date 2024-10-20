@@ -140,8 +140,8 @@ STATIC_URL = "core/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 JWT_ALGORITHM = "HS256"
-JWT_ACCESS_TOKEN_LIFETIME = timedelta(hours=3)
-JWT_REFRESH_TOKEN_LIFETIME = timedelta(days=1)
+JWT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=15)
+JWT_REFRESH_TOKEN_LIFETIME = timedelta(hours=3)
 
 CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379")
 

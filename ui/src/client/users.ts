@@ -73,6 +73,27 @@ function encodeUser(user: User): UserServerProps {
   };
 }
 
+export function createUser(
+  email: string,
+  password: string,
+  onSuccess: (user: User) => void,
+  onError: (errors: ServerErrors) => void,
+): void {
+  axios(
+    {
+      method: 'post',
+      url: `${CONFIG.api.coreURL}/v1/users/`,
+      data: { email, password },
+    }
+  )
+  .then(
+    (response) => onSuccess(decodeUser(response.data as UserServerProps))
+  )
+  .catch(
+    (error) => onError(error.response.data as ServerErrors)
+  );
+}
+
 export function getUser(userId: string, onSuccess: (user: User) => void): void {
   axios.get(`${CONFIG.api.coreURL}/v1/users/${userId}`)
   .then(

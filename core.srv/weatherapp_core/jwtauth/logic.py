@@ -51,4 +51,5 @@ def create_token_for_user(user: User, now: datetime | None = None) -> TokenOutSc
         user_id=user.pk,
         token_access=token_access,
         token_refresh=token_refresh,
+        token_access_life_time=int(settings.JWT_ACCESS_TOKEN_LIFETIME.total_seconds()),
     )

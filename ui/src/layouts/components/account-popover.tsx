@@ -1,4 +1,4 @@
-import type { UserInfo } from 'src/client/types';
+import type { UserInfo } from 'src/client/auth';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
 import { useState, useCallback } from 'react';

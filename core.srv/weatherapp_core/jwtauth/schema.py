@@ -30,3 +30,4 @@ class TokenOutSchema(Schema):
     user_id: int
     token_access: str
     token_refresh: str
+    token_access_life_time: int

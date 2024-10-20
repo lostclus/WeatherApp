@@ -1,6 +1,5 @@
 import type { ServerErrors } from 'src/client/types';
 
-import axios from "axios";
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -12,8 +11,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { CONFIG } from 'src/config-global';
 import { FormErrors } from 'src/client/forms';
+import { createUser } from 'src/client/users';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -43,22 +42,14 @@ export function SignUpView() {
     if (newErrors.hasErrors()) {
       setErrors(newErrors);
     } else {
-      axios(
-	{
-	  method: 'post',
-	  url: `${CONFIG.api.coreURL}/v1/users/`,
-	  data: { email, password },
-	}
-      )
-      .then(
-	() => router.push('/')
-      )
-      .catch(
-	(error) => {
-	  const serverErrors: ServerErrors = error.response.data;
+      createUser(
+	email,
+	password,
+	() => router.push('/'),
+	(serverErrors: ServerErrors) => {
 	  newErrors.addFromServer(serverErrors);
 	  setErrors(newErrors);
-	}
+	},
       );
     }
   }, [router, email, password, password2, setErrors]);

@@ -1,6 +1,6 @@
-import type { AuthResponse, ServerErrors } from 'src/client/types';
+import type { AuthResponse } from 'src/client/auth';
+import type { ServerErrors } from 'src/client/types';
 
-import axios from "axios";
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -13,8 +13,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { CONFIG } from 'src/config-global';
 import { FormErrors } from 'src/client/forms';
+import { createJwtToken } from "src/client/auth";
 import { useAuth } from "src/client/auth-provider";
 
 import { Iconify } from 'src/components/iconify';
@@ -42,26 +42,17 @@ export function SignInView() {
     if (newErrors.hasErrors()) {
       setErrors(newErrors);
     } else {
-      axios(
-	{
-	  method: 'post',
-	  url: `${CONFIG.api.coreURL}/v1/token/`,
-	  data: { email, password },
-	}
-      )
-      .then(
-	(response) => {
-	  const authResp = response.data as AuthResponse
-	  setAuthenticated(authResp);
-	  router.push('/')
-	}
-      )
-      .catch(
-	(error) => {
-	  const serverErrors: ServerErrors = error.response.data;
+      createJwtToken(
+	email,
+	password,
+	(authResponse: AuthResponse) => {
+	  setAuthenticated(authResponse);
+	  router.push('/');
+	},
+	(serverErrors: ServerErrors) => {
 	  newErrors.addFromServer(serverErrors);
 	  setErrors(newErrors);
-	}
+	},
       );
     }
   }, [router, email, password, setErrors, setAuthenticated]);

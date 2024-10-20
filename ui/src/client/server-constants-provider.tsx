@@ -31,7 +31,6 @@ export function ServerConstantsProvider({ children }: Props) {
     if (serverConstantsRaw) {
       setServerConstants(JSON.parse(serverConstantsRaw) as ServerConstants);
     } else {
-      console.log('User: ', user);
       axios.get(`${CONFIG.api.coreURL}/v1/constants`)
       .then(
 	(response) => {

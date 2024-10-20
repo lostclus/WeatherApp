@@ -1,4 +1,5 @@
 import pytest
+from django.conf import settings
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
@@ -25,6 +26,9 @@ async def test_token_create(async_client, user):
         "user_id": user.pk,
         "token_access": response_data["token_access"],
         "token_refresh": response_data["token_refresh"],
+        "token_access_life_time": int(
+            settings.JWT_ACCESS_TOKEN_LIFETIME.total_seconds()
+        ),
     }
 
 
@@ -63,6 +67,9 @@ async def test_token_refresh(async_client, user, jwt_token):
         "user_id": user.pk,
         "token_access": response_data["token_access"],
         "token_refresh": response_data["token_refresh"],
+        "token_access_life_time": int(
+            settings.JWT_ACCESS_TOKEN_LIFETIME.total_seconds()
+        ),
     }
 
 
