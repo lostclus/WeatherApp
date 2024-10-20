@@ -6,6 +6,7 @@ import type { ChangeEvent, SyntheticEvent } from 'react';
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -120,7 +121,7 @@ export function SettingsView() {
   }
 
   const renderForm = (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" sx={{ margin: 2 }}>
     {(!formUser) ? <CircularProgress/> : (
       <form>
 	<Stack spacing={2}>
@@ -204,7 +205,9 @@ export function SettingsView() {
         </Typography>
       </Box>
 
-      {renderForm}
+      <Card>
+	{renderForm}
+      </Card>
     </DashboardContent>
   );
 }
