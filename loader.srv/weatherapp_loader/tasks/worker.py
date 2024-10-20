@@ -32,8 +32,7 @@ def main() -> int:
 
     workers = [
         arq.worker.create_worker(
-            settings_cls=WorkerSettings,
-            redis_pool=get_arq_pool(),
+            WorkerSettings, redis_pool=get_arq_pool()
         ),
     ]
 
