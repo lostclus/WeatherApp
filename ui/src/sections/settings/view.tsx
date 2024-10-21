@@ -7,13 +7,18 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
 import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
 import FormControl from '@mui/material/FormControl';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { FormErrors } from 'src/client/forms';
@@ -54,7 +59,6 @@ function SelectControl(
         id={elemId}
 	name={name}
 	label={label}
-	autoWidth
 	value={value}
 	onChange={onChange}
       >
@@ -76,6 +80,7 @@ export function SettingsView() {
   const [locationChoices, setLocationChoices] = useState<Choices>({});
   const [formUser, setFormUser] = useState<User | null>(null);
   const [errors, setErrors] = useState<FormErrors>(new FormErrors());
+  const [isSuccess, setIsSuccess] = useState(false);
 
   if (!user)
     throw Error("Not authenticated");
@@ -97,12 +102,14 @@ export function SettingsView() {
     const { name, value } = event.target;
     const newUser = { ...formUser, [name]: value } as User;
     setFormUser(newUser);
+    setIsSuccess(false);
   }
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
-    if (!formUser) return;
     const newErrors = new FormErrors();
+    setIsSuccess(false);
+    if (!formUser) return;
 
     if (newErrors.hasErrors()) {
       setErrors(newErrors);
@@ -111,6 +118,7 @@ export function SettingsView() {
 	formUser, 
 	(newUser: User) => {
 	  setFormUser(newUser);
+	  setIsSuccess(true);
 	},
 	(serverErrors: ServerErrors) => {
 	  newErrors.addFromServer(serverErrors);
@@ -121,16 +129,9 @@ export function SettingsView() {
   }
 
   const renderForm = (
-    <Box display="flex" flexDirection="column" sx={{ margin: 2 }}>
+    <Box display="flex" flexDirection="column">
     {(!formUser) ? <CircularProgress/> : (
-      <form>
-	<Stack spacing={2}>
-	  {
-	    (errors.hasErrors()) ? (
-	      <Typography>errors.getErrors()</Typography>
-	    ) : ""
-	  }
-
+	<Stack spacing={2} sx={{ mt: 1 }}>
 	  <SelectControl
 	    name="timezone"
 	    label="Timezone"
@@ -180,19 +181,7 @@ export function SettingsView() {
 	    onChange={handleChange}
 	    choices={locationChoices}
 	  />
-
-	  <LoadingButton
-	    fullWidth
-	    size="large"
-	    type="submit"
-	    color="inherit"
-	    variant="contained"
-	    onClick={handleSubmit}
-	  >
-	    Save
-	  </LoadingButton>
 	</Stack>
-      </form>
     )}
     </Box>
   )
@@ -205,9 +194,54 @@ export function SettingsView() {
         </Typography>
       </Box>
 
-      <Card>
-	{renderForm}
-      </Card>
+      <Snackbar
+	open={isSuccess}
+	anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+	autoHideDuration={3000}
+	onClose={() => setIsSuccess(false)}
+      >
+	<Alert severity="success" variant="filled">Settings was updated.</Alert>
+      </Snackbar>
+      <Snackbar
+	open={errors.hasErrors()}
+	anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+	<Alert severity="error" variant="filled">{ errors.getErrors() }</Alert>
+      </Snackbar>
+
+      <Grid
+	container
+	spacing={0}
+	direction="column"
+	alignItems="center"
+      >
+	<Grid item xs={3}>
+	  <Card sx={{ minWidth: 500 }}>
+	    <form>
+	      <CardContent>
+		{renderForm}
+	      </CardContent>
+	      <CardActions
+		sx={{
+		  alignSelf: "stretch",
+		  display: "flex",
+		  justifyContent: "flex-end",
+		  alignItems: "flex-start",
+		  m: 1,
+		}}
+	      >
+		<Button
+		  type="submit"
+		  variant="contained"
+		  onClick={handleSubmit}
+		>
+		  Save
+		</Button>
+	      </CardActions>
+	    </form>
+	  </Card>
+	</Grid>
+      </Grid>
     </DashboardContent>
   );
 }

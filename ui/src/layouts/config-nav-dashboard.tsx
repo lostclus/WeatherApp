@@ -19,22 +19,10 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
-    title: 'Locations',
+    title: 'My Locations',
     path: '/locations',
     icon: icon('my-location'),
   },
-  /*
-  {
-    title: 'Product',
-    path: '/products',
-    icon: icon('ic-cart'),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
-  },
-  */
   {
     title: 'Settings',
     path: '/settings',

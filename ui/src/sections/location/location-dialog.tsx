@@ -47,7 +47,7 @@ export function LocationDialog(props: LocationDialogProps) {
     <Dialog fullWidth onClose={onClose} open={open}>
       <DialogTitle>{(isCreation) ? "New location" : "Edit location"}</DialogTitle>
       <DialogContent>
-	<Stack spacing={2}>
+	<Stack spacing={2} sx={{m: 2}}>
 	  <TextField
 	    required
 	    margin="dense"
@@ -111,9 +111,9 @@ export function LocationDialog(props: LocationDialogProps) {
 	  />
 	</Stack>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" onClick={onSave}>Save</Button>
+      <DialogActions sx={{m: 2}}>
+        <Button variant="outlined" onClick={onClose}>Cancel</Button>
+        <Button variant="contained" type="submit" onClick={onSave}>Save</Button>
       </DialogActions>
     </Dialog>
   );

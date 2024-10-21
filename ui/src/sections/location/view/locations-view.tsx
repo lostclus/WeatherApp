@@ -6,7 +6,9 @@ import { useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
@@ -48,6 +50,7 @@ export function LocationsView() {
   const [dialogData, setDialogData] = useState(nullLocation);
   const [dialogErrors, setDialogErrors] = useState(new FormErrors());
   const [refreshCount, setRefreshCount] = useState(0);
+  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     getMyLocations((newLocations) => setLocations(newLocations));
@@ -58,6 +61,7 @@ export function LocationsView() {
     setDialogData(nullLocation);
     setDialogCreation(true);
     setDialogOpen(true);
+    setSuccessMsg("");
   };
 
   const handleEditLocation = (locationId: string) => {
@@ -67,16 +71,23 @@ export function LocationsView() {
     ).forEach((loc) => setDialogData(loc));
     setDialogCreation(false);
     setDialogOpen(true);
+    setSuccessMsg("");
   };
 
   const handleDeleteLocation = (locationId: string) => {
     if (!locations) return;
-    deleteLocation(locationId, () => setRefreshCount(refreshCount + 1));
+    deleteLocation(locationId, () => {
+      setRefreshCount(refreshCount + 1);
+      setSuccessMsg("Location was deleted.");
+    });
   };
 
   const handleDeleteManyLocations = (locationIds: string[]) => {
     locationIds.forEach((locationId) => {
-      deleteLocation(locationId, () => setRefreshCount(refreshCount + 1));
+      deleteLocation(locationId, () => {
+	setRefreshCount(refreshCount + 1);
+	setSuccessMsg("Location was deleted.");
+      });
     });
   }
 
@@ -84,6 +95,8 @@ export function LocationsView() {
     if (!locations) return;
 
     const newErrors = new FormErrors();
+
+    setSuccessMsg("");
 
     if (!dialogData.name) {
       newErrors.addError('name', 'Name is required!');
@@ -99,6 +112,7 @@ export function LocationsView() {
       newErrors.clear();
       setDialogErrors(newErrors);
       setRefreshCount(refreshCount + 1);
+      setSuccessMsg((isDialogCreation) ? "Location was created." : "Location was updated.");
     };
 
     const onError = (serverErrors: ServerErrors) => {
@@ -145,6 +159,15 @@ export function LocationsView() {
         </Button>
       </Box>
 
+      <Snackbar
+	open={Boolean(successMsg)}
+	anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+	autoHideDuration={3000}
+	onClose={() => setSuccessMsg("")}
+      >
+	<Alert severity="success" variant="filled">{successMsg}</Alert>
+      </Snackbar>
+
       <Card>
         <LocationTableToolbar
           numSelected={table.selected.length}
@@ -174,9 +197,9 @@ export function LocationsView() {
                   }
                   headLabel={[
                     { id: 'name', label: 'Name' },
-                    { id: 'isDefault', label: 'Default', align: 'center' },
-                    { id: 'isActive', label: 'Active', align: 'center' },
-                    { id: '' },
+                    { id: 'isDefault', label: 'Default', align: 'center', width: 50 },
+                    { id: 'isActive', label: 'Active', align: 'center', width: 50 },
+                    { id: '', width: 50 },
                   ]}
                 />
                 <TableBody>
