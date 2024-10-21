@@ -11,7 +11,7 @@ export const navData = [
   {
     title: 'Dashboard',
     path: '/',
-    icon: icon('ic-analytics'),
+    icon: icon('dashboard'),
   },
   {
     title: 'Explore',
@@ -21,7 +21,7 @@ export const navData = [
   {
     title: 'Locations',
     path: '/locations',
-    icon: icon('ic-user'),
+    icon: icon('my-location'),
   },
   /*
   {
