@@ -22,8 +22,8 @@ import { ExploreChartToolbar } from '../explore-chart-toolbar';
 export function ExploreView() {
   const [locations, setLocations] = useState<Location_[]>([]);
   const [locationId, setLocationId] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(dayjs('2024-10-01'));
-  const [endDate, setEndDate] = useState(dayjs('2024-11-01'));
+  const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day'));
+  const [endDate, setEndDate] = useState(dayjs());
   const [dataset, setDataset] = useState<Weather[]>([]);
 
   useEffect(() => {
