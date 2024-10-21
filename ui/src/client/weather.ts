@@ -72,6 +72,9 @@ export type WeatherReqest = {
   endDate: string,
   fields: string[],
   timezone: string,
+  temperatureUnit: string,
+  windSpeedUnit: string,
+  precipitationUnit: string,
 };
 
 export type WeatherReqestServerProps = {
@@ -80,6 +83,9 @@ export type WeatherReqestServerProps = {
   end_date: string,
   fields: string[],
   timezone: string,
+  temperature_unit: string,
+  wind_speed_unit: string,
+  precipitation_unit: string,
 };
 
 function decodeWeather(serverWeather: WeatherServerProps): Weather {
@@ -87,13 +93,25 @@ function decodeWeather(serverWeather: WeatherServerProps): Weather {
 }
 
 function encodeWeatherReqest(req: WeatherReqest): WeatherReqestServerProps {
-  const { locationId, startDate, endDate, fields, timezone } = req;
+  const {
+    locationId,
+    startDate,
+    endDate,
+    fields,
+    timezone,
+    temperatureUnit,
+    windSpeedUnit,
+    precipitationUnit,
+  } = req;
   const serverReq: WeatherReqestServerProps = {
     location_id: locationId,
     start_date: startDate, 
     end_date: endDate,
     fields,
     timezone,
+    temperature_unit: temperatureUnit,
+    wind_speed_unit: windSpeedUnit,
+    precipitation_unit: precipitationUnit,
   };
   return serverReq;
 }

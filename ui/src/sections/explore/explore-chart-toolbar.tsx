@@ -1,3 +1,4 @@
+import type { User } from 'src/client/users';
 import type { Location_ } from 'src/client/locations'
 import type { SelectChangeEvent } from '@mui/material/Select';
 
@@ -19,6 +20,7 @@ type ExploreChartToolbarProps = {
   onLocationChange: (event: SelectChangeEvent) => void,
   onStartDateChange: (event: any) => void;
   onEndDateChange: (event: any) => void;
+  settings: User,
 };
 
 export function ExploreChartToolbar(
@@ -29,7 +31,8 @@ export function ExploreChartToolbar(
     endDate,
     onLocationChange,
     onStartDateChange,
-    onEndDateChange
+    onEndDateChange,
+    settings,
   }: ExploreChartToolbarProps
 ) {
   return (
@@ -58,6 +61,7 @@ export function ExploreChartToolbar(
 	<FormControl>
 	  <DatePicker
 	    label="Start"
+	    format={settings.dateFormat}
 	    onChange={onStartDateChange}
 	    value={startDate}
 	  />
@@ -65,6 +69,7 @@ export function ExploreChartToolbar(
 	<FormControl>
 	  <DatePicker
 	    label="End"
+	    format={settings.dateFormat}
 	    onChange={onEndDateChange}
 	    value={endDate}
 	  />

@@ -1,3 +1,4 @@
+import type { User } from 'src/client/users';
 import type { Weather } from 'src/client/weather';
 
 import dayjs from 'dayjs';
@@ -13,16 +14,20 @@ const keyToLabel: { [key: string]: string } = {
 
 type Props =  {
   dataset: Weather[],
+  settings: User,
 };
 
-export function ExploreChart({ dataset }: Props) {
+export function ExploreChart({ dataset, settings }: Props) {
   return (
     <LineChart
       xAxis={[
 	{
 	  dataKey: 'timestamp',
 	  scaleType: 'time',
-	  valueFormatter: (value) => dayjs.unix(value / 1000).format(),
+	  valueFormatter: (value) => {
+	    const fmt = `${settings.dateFormat} ${settings.timeFormat}`;
+	    return dayjs.unix(value / 1000).format(fmt);
+	  },
 	}
       ]}
       series={Object.keys(keyToLabel).map((key) => ({
