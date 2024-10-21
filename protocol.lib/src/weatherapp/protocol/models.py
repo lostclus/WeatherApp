@@ -38,33 +38,118 @@ class Location(BaseModel):
 
 
 class WeatherData(BaseModel):
-    temperature_2m: float | None = None
-    relative_humidity_2m: float | None = None
-    dew_point_2m: float | None = None
-    apparent_temperature: float | None = None
-    pressure_msl: float | None = None
-    precipitation: float | None = None
-    rain: float | None = None
-    snowfall: float | None = None
-    cloud_cover: float | None = None
-    cloud_cover_low: float | None = None
-    cloud_cover_mid: float | None = None
-    cloud_cover_high: float | None = None
-    shortwave_radiation: float | None = None
-    direct_radiation: float | None = None
-    direct_normal_irradiance: float | None = None
-    diffuse_radiation: float | None = None
-    global_tilted_irradiance: float | None = None
-    sunshine_duration: float | None = None
-    wind_speed_10m: float | None = None
-    wind_speed_100m: float | None = None
-    wind_direction_10m: float | None = None
-    wind_direction_100m: float | None = None
-    wind_gusts_10m: float | None = None
-    et0_fao_evapotranspiration: float | None = None
-    weather_code: int | None = None
-    snow_depth: float | None = None
-    vapour_pressure_deficit: float | None = None
+    temperature_2m: float | None = Field(
+        title="Temperature (2 m)",
+        default=None,
+    )
+    relative_humidity_2m: float | None = Field(
+        title="Relative Humidity (2 m)",
+        default=None,
+    )
+    dew_point_2m: float | None = Field(
+        title="Dewpoint (2 m)",
+        default=None,
+    )
+    apparent_temperature: float | None = Field(
+        title="Apparent Temperature",
+        default=None,
+    )
+    pressure_msl: float | None = Field(
+        title="Sealevel Pressure",
+        default=None,
+    )
+    precipitation: float | None = Field(
+        title="Precipitation (rain + showers + snow)",
+        default=None,
+    )
+    rain: float | None = Field(
+        title="Rain",
+        default=None,
+    )
+    snowfall: float | None = Field(
+        title="Snowfall",
+        default=None,
+    )
+    cloud_cover: float | None = Field(
+        title="Cloud cover Total",
+        default=None,
+    )
+    cloud_cover_low: float | None = Field(
+        title="Cloud cover Low",
+        default=None,
+    )
+    cloud_cover_mid: float | None = Field(
+        title="Cloud cover Mid",
+        default=None,
+    )
+    cloud_cover_high: float | None = Field(
+        title="Cloud cover High",
+        default=None,
+    )
+    shortwave_radiation: float | None = Field(
+        title="Shortwave Solar Radiation GHI",
+        default=None,
+    )
+    direct_radiation: float | None = Field(
+        title="Direct Solar Radiation",
+        default=None,
+    )
+    direct_normal_irradiance: float | None = Field(
+        title="Direct Normal Irradiance DNI",
+        default=None,
+    )
+    diffuse_radiation: float | None = Field(
+        title="Diffuse Solar Radiation DHI",
+        default=None,
+    )
+    global_tilted_irradiance: float | None = Field(
+        title="Global Tilted Radiation GTI",
+        default=None,
+    )
+    sunshine_duration: float | None = Field(
+        title="Sunshine Duration",
+        default=None,
+    )
+    wind_speed_10m: float | None = Field(
+        title="Wind Speed (10 m)",
+        default=None,
+    )
+    wind_speed_100m: float | None = Field(
+        # TODO: check that this is valid field for both historic and forecast
+        # datasets
+        title="Wind Speed (100 m)",
+        default=None,
+    )
+    wind_direction_10m: float | None = Field(
+        title="Wind Direction (10 m)",
+        default=None,
+    )
+    wind_direction_100m: float | None = Field(
+        # TODO: check that this is valid field for both historic and forecast
+        # datasets
+        title="Wind Direction (100 m)",
+        default=None,
+    )
+    wind_gusts_10m: float | None = Field(
+        title="Wind Gusts (10 m)",
+        default=None,
+    )
+    et0_fao_evapotranspiration: float | None = Field(
+        title="Reference Evapotranspiration (ET₀)",
+        default=None,
+    )
+    weather_code: int | None = Field(
+        title="Weather code",
+        default=None,
+    )
+    snow_depth: float | None = Field(
+        title="Snow Depth",
+        default=None,
+    )
+    vapour_pressure_deficit: float | None = Field(
+        title="Vapour Pressure Deficit",
+        default=None,
+    )
 
     model_config = ConfigDict(extra="forbid")
 

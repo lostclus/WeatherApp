@@ -14,6 +14,7 @@ const nullServerConstants: ServerConstants = {
   precipitationUnits: {},
   dateFormats: {},
   timeFormats: {},
+  weatherFields: {},
 };
 
 const ServerConstantsContext = createContext<ServerConstants>(nullServerConstants);
@@ -41,6 +42,7 @@ export function ServerConstantsProvider({ children }: Props) {
 	    precipitation_units: precipitationUnits,
 	    date_formats: dateFormats,
 	    time_formats: timeFormats,
+	    weather_fields: weatherFields,
 	  } = response.data;
 	  const newServerConstants = {
 	    timezones,
@@ -49,6 +51,7 @@ export function ServerConstantsProvider({ children }: Props) {
 	    precipitationUnits,
 	    dateFormats,
 	    timeFormats,
+	    weatherFields,
 	  };
 	  setServerConstants(newServerConstants);
 	}

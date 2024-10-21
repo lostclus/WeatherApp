@@ -20,7 +20,6 @@ def test_location_null_island():
         latitude=Decimal(0),
         longitude=Decimal(0),
         user_id=None,
-        is_default=False,
         is_active=True,
     )
     assert location
@@ -34,7 +33,6 @@ def test_location_invalid_latitude():
             latitude=Decimal(91),
             longitude=Decimal(0),
             user_id=None,
-            is_default=False,
             is_active=True,
         )
 
@@ -47,7 +45,6 @@ def test_location_invalid_longitude():
             latitude=Decimal(0),
             longitude=Decimal(181),
             user_id=None,
-            is_default=False,
             is_active=True,
         )
 

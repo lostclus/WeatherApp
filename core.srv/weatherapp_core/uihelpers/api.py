@@ -2,6 +2,8 @@ from typing import Any
 
 from django.http import HttpRequest
 from ninja import Router
+from pydantic import BaseModel
+from weatherapp.protocol import WeatherData
 
 from weatherapp_core.constants import (
     DateFormatChoices,
@@ -19,14 +21,18 @@ uihelpers_router = Router()
 
 @uihelpers_router.get("/constants")
 async def constants(request: HttpRequest) -> ConstantsSchema:
-    def choices_to_dict(choices: Any) -> dict[str, str]:
+    def from_choices(choices: Any) -> dict[str, str]:
         return {str(value): str(text) for value, text in choices.choices}
 
+    def from_pydantic_model(model: type[BaseModel]) -> dict[str, str]:
+        return {name: info.title or name for name, info in model.model_fields.items()}
+
     return ConstantsSchema(
-        timezones=choices_to_dict(TimeZoneChoices),
-        temperature_units=choices_to_dict(TemperatureUnitChoices),
-        wind_speed_units=choices_to_dict(WindSpeedUnitChoices),
-        precipitation_units=choices_to_dict(PrecipitationUnitChoices),
-        date_formats=choices_to_dict(DateFormatChoices),
-        time_formats=choices_to_dict(TimeFormatChoices),
+        timezones=from_choices(TimeZoneChoices),
+        temperature_units=from_choices(TemperatureUnitChoices),
+        wind_speed_units=from_choices(WindSpeedUnitChoices),
+        precipitation_units=from_choices(PrecipitationUnitChoices),
+        date_formats=from_choices(DateFormatChoices),
+        time_formats=from_choices(TimeFormatChoices),
+        weather_fields=from_pydantic_model(WeatherData),
     )

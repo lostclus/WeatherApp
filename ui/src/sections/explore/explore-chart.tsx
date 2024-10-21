@@ -7,17 +7,21 @@ import { LineChart } from '@mui/x-charts/LineChart';
 
 // ----------------------------------------------------------------------
 
-const keyToLabel: { [key: string]: string } = {
-  temperature_2m: "Temperature (2m)",
-  relative_humidity_2m: "Relative humidity (2m)",
-};
-
 type Props =  {
   dataset: Weather[],
+  weatherFields: string[],
+  weatherFieldsChoices: { [key: string]: string},
   settings: User,
 };
 
-export function ExploreChart({ dataset, settings }: Props) {
+export function ExploreChart(
+  {
+    dataset,
+    weatherFields,
+    weatherFieldsChoices,
+    settings
+  }: Props
+) {
   return (
     <LineChart
       xAxis={[
@@ -30,9 +34,9 @@ export function ExploreChart({ dataset, settings }: Props) {
 	  },
 	}
       ]}
-      series={Object.keys(keyToLabel).map((key) => ({
+      series={weatherFields.map((key) => ({
         dataKey: key,
-        label: keyToLabel[key],
+        label: weatherFieldsChoices[key],
       }))}
       dataset={dataset}
       height={400}

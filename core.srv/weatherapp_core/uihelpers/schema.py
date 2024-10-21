@@ -8,3 +8,4 @@ class ConstantsSchema(Schema):
     precipitation_units: dict[str, str]
     date_formats: dict[str, str]
     time_formats: dict[str, str]
+    weather_fields: dict[str, str]

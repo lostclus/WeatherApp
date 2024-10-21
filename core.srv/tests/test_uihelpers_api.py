@@ -27,3 +27,4 @@ def test_constraints_get(client, auth_headers):
     assert is_valid_dict(response_data["precipitation_units"])
     assert is_valid_dict(response_data["date_formats"])
     assert is_valid_dict(response_data["time_formats"])
+    assert is_valid_dict(response_data["weather_fields"])

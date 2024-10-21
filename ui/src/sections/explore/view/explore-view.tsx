@@ -16,6 +16,7 @@ import { getWeather } from 'src/client/weather';
 import { useAuth } from 'src/client/auth-provider';
 import { getLocations } from 'src/client/locations';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useServerConstants } from 'src/client/server-constants-provider';
 
 import { ExploreChart } from '../explore-chart';
 import { ExploreChartToolbar } from '../explore-chart-toolbar';
@@ -35,11 +36,13 @@ const nullSettings: User = {
 
 export function ExploreView() {
   const { user } = useAuth();
+  const serverConstants = useServerConstants();
   const [settings, setSettings] = useState(nullSettings);
   const [locations, setLocations] = useState<Location_[]>([]);
   const [locationId, setLocationId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day'));
   const [endDate, setEndDate] = useState(dayjs());
+  const [weatherFields, setWeatherFields] = useState(["temperature_2m"]);
   const [dataset, setDataset] = useState<Weather[]>([]);
 
   if (!user) throw Error("No authenticated");
@@ -73,7 +76,7 @@ export function ExploreView() {
 	  locationId,
 	  startDate: startDate.format('YYYY-MM-DD'),
 	  endDate: endDate.format('YYYY-MM-DD'),
-	  fields: ["temperature_2m", "relative_humidity_2m"],
+	  fields: weatherFields,
 	  timezone: settings.timezone,
 	  temperatureUnit: settings.temperatureUnit,
 	  windSpeedUnit: settings.windSpeedUnit,
@@ -84,7 +87,16 @@ export function ExploreView() {
     } else {
       setDataset([]);
     }
-  }, [locationId, startDate, endDate, settings]);
+  }, [locationId, startDate, endDate, weatherFields, settings]);
+
+  const handleWeatherFieldsChange = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value },
+    } = event;
+    setWeatherFields(
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
 
   return (
     <DashboardContent>
@@ -104,10 +116,18 @@ export function ExploreView() {
 	    onLocationChange={(event: SelectChangeEvent) => setLocationId(event.target.value)}
 	    onStartDateChange={(value: any) => setStartDate(value)}
 	    onEndDateChange={(value: any) => setEndDate(value)}
+	    weatherFields={weatherFields}
+	    weatherFieldsChoices={serverConstants.weatherFields}
+	    onWeatherFieldsChange={handleWeatherFieldsChange}
 	    settings={settings}
 	  />
 
-	  <ExploreChart dataset={dataset} settings={settings} />
+	  <ExploreChart
+	    dataset={dataset}
+	    weatherFields={weatherFields}
+	    weatherFieldsChoices={serverConstants.weatherFields}
+	    settings={settings}
+	  />
       </Card>
 
     </DashboardContent>

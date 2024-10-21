@@ -5,21 +5,28 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import Toolbar from '@mui/material/Toolbar';
+import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 // ----------------------------------------------------------------------
 
 type ExploreChartToolbarProps = {
   locations: Location_[],
   locationId: string,
-  startDate: any,
-  endDate: any,
   onLocationChange: (event: SelectChangeEvent) => void,
+  startDate: any,
   onStartDateChange: (event: any) => void;
+  endDate: any,
   onEndDateChange: (event: any) => void;
+  weatherFields: string[],
+  weatherFieldsChoices: { [key: string]: string },
+  onWeatherFieldsChange: (event: SelectChangeEvent<string[]>) => void,
   settings: User,
 };
 
@@ -27,11 +34,14 @@ export function ExploreChartToolbar(
   {
     locations,
     locationId,
-    startDate,
-    endDate,
     onLocationChange,
+    startDate,
     onStartDateChange,
+    endDate,
     onEndDateChange,
+    weatherFields,
+    weatherFieldsChoices,
+    onWeatherFieldsChange,
     settings,
   }: ExploreChartToolbarProps
 ) {
@@ -73,6 +83,29 @@ export function ExploreChartToolbar(
 	    onChange={onEndDateChange}
 	    value={endDate}
 	  />
+	</FormControl>
+	<FormControl>
+	  <InputLabel id="weather-fields-label">Parameters</InputLabel>
+	  <Select
+	    labelId="weather-fields-label"
+	    id="weather-fields"
+	    multiple
+	    value={weatherFields}
+	    onChange={onWeatherFieldsChange}
+	    input={<OutlinedInput label="Parameters" />}
+	    renderValue={(selected) => selected.join(', ')}
+	  >
+	    {
+	      Object.entries(weatherFieldsChoices).map(
+		([value, label]) => (
+		  <MenuItem key={value} value={value}>
+		    <Checkbox checked={weatherFields.includes(value)} />
+		    <ListItemText primary={label} />
+		  </MenuItem>
+		)
+	      )
+	    }
+	  </Select>
 	</FormControl>
       </Stack>
     </Toolbar>

@@ -16,4 +16,5 @@ export type ServerConstants = {
   precipitationUnits: ServerChoicesList,
   dateFormats: ServerChoicesList,
   timeFormats: ServerChoicesList,
+  weatherFields: ServerChoicesList,
 };
