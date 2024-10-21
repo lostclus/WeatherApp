@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect, useContext, createContext } from "react";
 
 import { refreshJwtToken } from "./auth";
 
-import type { AuthInfo, AuthStore, AuthResponse, AuthCallbackInfo} from "./auth";
+import type { AuthInfo, AuthStore, AuthResponse} from "./auth";
 
 const nullAuth: AuthInfo = {
   token: null,
@@ -14,11 +14,11 @@ const nullAuth: AuthInfo = {
 
 const AuthContext = createContext<AuthInfo>(nullAuth);
 
-function refreshTokenOnTimeout(tokenRefresh: string, callbacks: AuthCallbackInfo): void {
+function refreshTokenOnTimeout(info: AuthInfo): void {
   refreshJwtToken(
-    tokenRefresh,
-    (resp: AuthResponse) => callbacks.setAuthenticated(resp),
-    () => callbacks.dropAuthenticated(),
+    (info.token) ? info.token.refresh : "",
+    (resp: AuthResponse) => info.setAuthenticated(resp),
+    () => info.dropAuthenticated(),
   );
 };
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: Props) {
       token: {
 	access: response.token_access,
 	refresh: response.token_refresh,
-	refreshDelay: response.token_access_life_time * 1000,
+	accessExpiresAt: Date.parse(response.token_access_expires_at),
       },
       user: {
 	id: response.user_id,
@@ -74,12 +74,8 @@ export function AuthProvider({ children }: Props) {
 
   useEffect(() => {
     if (contextValue.token) {
-      const timerId = setTimeout(
-        refreshTokenOnTimeout,
-        contextValue.token.refreshDelay / 2,
-        contextValue.token.refresh,
-        contextValue
-      );
+      const delay = Math.max((contextValue.token.accessExpiresAt - Date.now()) * 0.9, 1);
+      const timerId = setTimeout(refreshTokenOnTimeout, delay, contextValue);
       return () => clearTimeout(timerId);
     }
     return () => null;

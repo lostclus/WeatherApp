@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import jwt
 from django.conf import settings
@@ -26,7 +26,7 @@ def decode_token(token: str) -> TokenPayload | None:
 
 
 def create_token_for_user(user: User, now: datetime | None = None) -> TokenOutSchema:
-    now = now or datetime.now(tz=timezone.utc)
+    now = (now or datetime.now(UTC)).replace(microsecond=0)
     exp_access = now + settings.JWT_ACCESS_TOKEN_LIFETIME
     exp_refresh = now + settings.JWT_REFRESH_TOKEN_LIFETIME
 
@@ -51,5 +51,5 @@ def create_token_for_user(user: User, now: datetime | None = None) -> TokenOutSc
         user_id=user.pk,
         token_access=token_access,
         token_refresh=token_refresh,
-        token_access_life_time=int(settings.JWT_ACCESS_TOKEN_LIFETIME.total_seconds()),
+        token_access_expires_at=exp_access,
     )

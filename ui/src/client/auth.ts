@@ -9,7 +9,7 @@ export type AuthResponse = {
   user_id: string,
   token_access: string,
   token_refresh: string,
-  token_access_life_time: number,
+  token_access_expires_at: string,
 };
 
 export type UserInfo = {
@@ -21,7 +21,7 @@ export type AuthStore = {
   token: {
     access: string,
     refresh: string,
-    refreshDelay: number,
+    accessExpiresAt: number,
   } | null,
   user: UserInfo | null,
 }

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import StrEnum
 
 from ninja import Schema
@@ -30,4 +31,4 @@ class TokenOutSchema(Schema):
     user_id: int
     token_access: str
     token_refresh: str
-    token_access_life_time: int
+    token_access_expires_at: datetime

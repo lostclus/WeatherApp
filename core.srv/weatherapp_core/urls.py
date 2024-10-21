@@ -15,7 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from http import HTTPStatus
+
+import jwt
 from django.contrib import admin
+from django.http import HttpRequest, HttpResponse
 from django.urls import path
 from ninja import NinjaAPI
 
@@ -31,6 +35,17 @@ api = NinjaAPI(
     version=__version__,
     auth=async_auth_request,
 )
+
+
+@api.exception_handler(jwt.DecodeError)
+@api.exception_handler(jwt.ExpiredSignatureError)
+def _auth_error_handler(request: HttpRequest, exc: Exception) -> HttpResponse:
+    return api.create_response(
+        request,
+        {"detail": str(exc)},
+        status=HTTPStatus.UNAUTHORIZED,
+    )
+
 
 api.add_router("", uihelpers_router)
 api.add_router("/token/", auth_router)
