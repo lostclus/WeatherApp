@@ -60,7 +60,7 @@ Development plan:
   and stream it to Kafka
 - [x] Implement consumer to sync weather data in `query` service
 - [x] Implement weather API in `query` service
-- [ ] Implement weather explore page in UI
+- [x] Implement weather explore page in UI
 - [ ] Implement weather dashboard UI
 - [ ] Implement weather aggregation API
 - [ ] Implement weather aggregation UI
