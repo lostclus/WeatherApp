@@ -1,7 +1,8 @@
-import type { UserInfo } from 'src/client/auth';
+import type { AuthInfo } from 'src/client/auth';
 import type { IconButtonProps } from '@mui/material/IconButton';
 
-import { useState, useCallback } from 'react';
+import { sha256 } from 'js-sha256';
+import { useMemo, useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,12 +16,10 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
 
-import { useAuth } from 'src/client/auth-provider';
-
 // ----------------------------------------------------------------------
 
 export type AccountPopoverProps = IconButtonProps & {
-  user: UserInfo,
+  auth: AuthInfo,
   data?: {
     label: string;
     href: string;
@@ -29,13 +28,21 @@ export type AccountPopoverProps = IconButtonProps & {
   }[];
 };
 
-export function AccountPopover({ user, data = [], sx, ...other }: AccountPopoverProps) {
+export function AccountPopover({ auth, data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-  const { dropAuthenticated } = useAuth();
-
   const pathname = usePathname();
-
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const { user } = auth;
+
+  if (!user) throw Error("Not authenticated");
+
+  const avatarUrl = useMemo(
+    () => {
+      const hash = sha256(user.email.toLowerCase());
+      return `https://www.gravatar.com/avatar/${ hash }`;
+    },
+    [user],
+  );
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -67,7 +74,11 @@ export function AccountPopover({ user, data = [], sx, ...other }: AccountPopover
         }}
         {...other}
       >
-        <Avatar alt={user.email} sx={{ width: 1, height: 1 }}>
+        <Avatar
+	  src={avatarUrl}
+	  alt={user.email}
+	  sx={{ width: 1, height: 1 }}
+	 >
           {user.email.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
@@ -133,7 +144,7 @@ export function AccountPopover({ user, data = [], sx, ...other }: AccountPopover
 	    color="error"
 	    size="medium"
 	    variant="text"
-	    onClick={() => {dropAuthenticated()}}
+	    onClick={() => {auth.dropAuthenticated()}}
 	   >
             Logout
           </Button>

@@ -32,7 +32,7 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
-  const { user } = useAuth();
+  const auth = useAuth();
 
   const [navOpen, setNavOpen] = useState(false);
 
@@ -75,10 +75,10 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 />
               </>
             ),
-            rightArea: (user) ? (
+            rightArea: (auth.user) ? (
               <Box gap={1} display="flex" alignItems="center">
                 <AccountPopover
-		  user={user}
+		  auth={auth}
                   data={[
                     {
                       label: 'Settings',
