@@ -37,6 +37,7 @@ export function ExploreChart(
       series={weatherFields.map((key) => ({
         dataKey: key,
         label: weatherFieldsChoices[key],
+	showMark: false,
       }))}
       dataset={dataset}
       height={400}
