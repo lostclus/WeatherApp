@@ -27,6 +27,7 @@ This project use my open source Python libraries:
 Code quality:
 - PEP8 (linted by black and ruff)
 - Static typing (validated by mypy)
+- Unit and integration tests (powered by pytest)
 
 Architecture: micro services. Services:
 
