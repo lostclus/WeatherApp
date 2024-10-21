@@ -12,7 +12,7 @@ async def test_weather(client, clickhouse_client, weather_object):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
     }
@@ -61,7 +61,7 @@ async def test_weather_timezone(client, clickhouse_client, weather_object):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
         "timezone": "Europe/Kyiv",
@@ -96,7 +96,7 @@ async def test_weather_date_filter(tz_name, client, clickhouse_client, weather_o
     )
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-02",
         "end_date": "2024-01-03",
         "fields": ["temperature_2m"],
@@ -122,7 +122,7 @@ async def test_weather_fields(field, client, clickhouse_client, weather_object):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
         "fields": [field],
@@ -155,7 +155,7 @@ async def test_weather_temperature_unit(
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
         "fields": ["temperature_2m"],
@@ -184,7 +184,7 @@ async def test_weather_wind_speed_unit(
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
         "fields": ["wind_speed_10m"],
@@ -212,7 +212,7 @@ async def test_weather_precipitation_unit(
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
-        "location_id": 1,
+        "location_ids": [1],
         "start_date": "2024-01-01",
         "end_date": "2024-01-01",
         "fields": ["precipitation"],

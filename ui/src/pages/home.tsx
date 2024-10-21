@@ -4,7 +4,7 @@ import { CONFIG } from 'src/config-global';
 import { useAuth } from 'src/client/auth-provider';
 
 import { WellcomeView } from 'src/sections/wellcome';
-import { OverviewAnalyticsView } from 'src/sections/overview/view';
+import { DashboardView } from 'src/sections/dashboard/view';
 
 
 // ----------------------------------------------------------------------
@@ -18,7 +18,7 @@ export default function Page() {
 	  <title> {`Dashboard - ${CONFIG.appName}`}</title>
 	</Helmet>
 
-	<OverviewAnalyticsView />
+	<DashboardView />
       </>
     ) : (
       <>

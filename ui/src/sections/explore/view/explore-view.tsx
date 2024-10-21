@@ -11,10 +11,10 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { getUser } from 'src/client/users';
 import { getWeather } from 'src/client/weather';
 import { useAuth } from 'src/client/auth-provider';
 import { getLocations } from 'src/client/locations';
+import { getUser, nullUser } from 'src/client/users';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useServerConstants } from 'src/client/server-constants-provider';
 
@@ -23,21 +23,10 @@ import { ExploreChartToolbar } from '../explore-chart-toolbar';
 
 // ----------------------------------------------------------------------
 
-const nullSettings: User = {
-  id: "",
-  timezone: "UTC",
-  temperatureUnit: "",
-  windSpeedUnit: "",
-  precipitationUnit: "",
-  dateFormat: "",
-  timeFormat: "",
-  defaultLocationId: "",
-};
-
 export function ExploreView() {
   const { user } = useAuth();
   const serverConstants = useServerConstants();
-  const [settings, setSettings] = useState(nullSettings);
+  const [settings, setSettings] = useState(nullUser);
   const [locations, setLocations] = useState<Location_[]>([]);
   const [locationId, setLocationId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day'));
@@ -73,7 +62,7 @@ export function ExploreView() {
     if (locationId) {
       getWeather(
 	{
-	  locationId,
+	  locationIds: [locationId],
 	  startDate: startDate.format('YYYY-MM-DD'),
 	  endDate: endDate.format('YYYY-MM-DD'),
 	  fields: weatherFields,

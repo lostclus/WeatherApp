@@ -26,6 +26,17 @@ export type User = {
   defaultLocationId: string,
 }
 
+export const nullUser: User = {
+  id: "",
+  timezone: "UTC",
+  temperatureUnit: "",
+  windSpeedUnit: "",
+  precipitationUnit: "",
+  dateFormat: "",
+  timeFormat: "",
+  defaultLocationId: "",
+};
+
 function decodeUser(userServer: UserServerProps): User {
   const {
     id,
