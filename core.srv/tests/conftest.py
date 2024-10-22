@@ -8,6 +8,11 @@ from weatherapp_core.jwtauth.logic import create_token_for_user
 from weatherapp_core.users.models import User
 
 
+@pytest.fixture(autouse=True)
+def _override_settings(settings):
+    settings.KAFKA_STREAMER["BOOTSTRAP_SERVERS"] = []
+
+
 @pytest_asyncio.fixture
 async def user(django_db_blocker):
     with django_db_blocker.unblock():
