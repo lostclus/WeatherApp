@@ -14,6 +14,7 @@ RUN pip install --upgrade pip
 
 WORKDIR /root
 
+COPY ../jwtauth.lib ../jwtauth.lib
 COPY ../protocol.lib ../protocol.lib
 COPY ../stubs.lib ../stubs.lib
 COPY query.srv/requirements.txt ./
@@ -40,11 +41,13 @@ RUN addgroup -g $USER_GROUP_ID -S appuser \
 
 WORKDIR /app
 
+COPY ../jwtauth.lib ../jwtauth.lib
 COPY ../protocol.lib ../protocol.lib
 COPY ../stubs.lib ../stubs.lib
 COPY query.srv/requirements.txt ./
 RUN \
-    sed -i "s|^-e ../protocol.lib|weatherapp.protocol|" requirements.txt \
+    sed -i "s|^-e ../jwtauth.lib|weatherapp.jwtauth|" requirements.txt \
+    && sed -i "s|^-e ../protocol.lib|weatherapp.protocol|" requirements.txt \
     && sed -i "s|^-e ../stubs.lib|weatherapp.stubs|" requirements.txt \
     && sed -i "s/ @ git.*$//" requirements.txt \
     && pip install --no-index \

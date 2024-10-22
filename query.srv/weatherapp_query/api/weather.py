@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from ..models import Weather, WeatherDataField
 from ..storage.weather import get_weather
-from .dependencies import ClickHouseDep
+from .dependencies import AuthDep, ClickHouseDep
 
 router = APIRouter()
 
@@ -48,7 +48,9 @@ def _serialize_weather(req: BaseWeatherRequest, objs: list[Weather]) -> bytes:
 
 
 @router.post("/weather", response_model=list[Weather])
-async def weather(req: WeatherRequest, ch: ClickHouseDep) -> Response:
+async def weather(
+    req: WeatherRequest, ch: ClickHouseDep, credentials: AuthDep
+) -> Response:
     tz = ZoneInfo(req.timezone)
     timestamp_start = datetime(
         req.start_date.year,
@@ -76,7 +78,9 @@ async def weather(req: WeatherRequest, ch: ClickHouseDep) -> Response:
 
 
 @router.post("/current-weather", response_model=list[Weather])
-async def current_weather(req: CurrentWeatherRequest, ch: ClickHouseDep) -> Response:
+async def current_weather(
+    req: CurrentWeatherRequest, ch: ClickHouseDep, credentials: AuthDep
+) -> Response:
     now = datetime.now(UTC).replace(microsecond=0)
     objs = await get_weather(
         ch,

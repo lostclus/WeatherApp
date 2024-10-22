@@ -6,7 +6,7 @@ from weatherapp_query.storage.weather import add_weather
 
 
 @pytest.mark.asyncio
-async def test_current_weather(client, clickhouse_client, weather_object):
+async def test_current_weather(client, auth_headers, clickhouse_client, weather_object):
     now = datetime.now(UTC).replace(tzinfo=None)
     weather_object.timestamp = now.replace(minute=0, second=0, microsecond=0)
 
@@ -17,7 +17,9 @@ async def test_current_weather(client, clickhouse_client, weather_object):
         "fields": ["temperature_2m"],
     }
 
-    response = await client.post("/current-weather", json=request_data)
+    response = await client.post(
+        "/current-weather", json=request_data, headers=auth_headers
+    )
     assert response.status_code == 200, response.content
     response_data = response.json()
 

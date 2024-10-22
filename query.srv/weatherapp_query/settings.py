@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     clickhouse_user: str = "default"
     clickhouse_password: str = ""
 
+    secret_key: str = "security_key"
+
     # Logging
     logging_handlers: list[str] = ["console"]
     logging_level: str = "DEBUG"

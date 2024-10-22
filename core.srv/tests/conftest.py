@@ -2,9 +2,10 @@ from decimal import Decimal
 
 import pytest
 import pytest_asyncio
+from weatherapp.jwtauth import UserInfo
 
 from weatherapp_core.geo.models import Location
-from weatherapp_core.jwtauth.logic import create_token_for_user
+from weatherapp_core.jwtauth.auth import get_authenticator
 from weatherapp_core.users.models import User
 
 
@@ -20,8 +21,13 @@ async def user(django_db_blocker):
 
 
 @pytest.fixture
-def jwt_token(user):
-    token = create_token_for_user(user)
+def authenticator():
+    return get_authenticator()
+
+
+@pytest.fixture
+def jwt_token(user, authenticator):
+    token = authenticator.create_token_for_user(UserInfo(user_id=user.pk))
     return token
 
 

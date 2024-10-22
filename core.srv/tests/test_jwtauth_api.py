@@ -1,8 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-
-from weatherapp_core.jwtauth.logic import create_token_for_user
+from weatherapp.jwtauth import UserInfo
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
@@ -103,15 +102,17 @@ async def test_token_refresh_invalid_token(async_client):
         content_type="application/json",
     )
 
-    assert response.status_code == 401, response.content
+    assert response.status_code == 400, response.content
     response_data = response.json()
 
-    assert response_data == {"detail": "Authentication failed"}
+    assert response_data == {"detail": "JWT token decode error"}
 
 
 @pytest.mark.asyncio
-async def test_token_refresh_expired_token(async_client, user):
-    token = create_token_for_user(user, now=datetime.now(UTC) - timedelta(days=365))
+async def test_token_refresh_expired_token(async_client, user, authenticator):
+    token = authenticator.create_token_for_user(
+        UserInfo(user_id=user.pk), now=datetime.now(UTC) - timedelta(days=365)
+    )
     response = await async_client.post(
         "/core/api/v1/token/refresh",
         data={
@@ -123,4 +124,4 @@ async def test_token_refresh_expired_token(async_client, user):
     assert response.status_code == 401, response.content
     response_data = response.json()
 
-    assert response_data == {"detail": "Signature has expired"}
+    assert response_data == {"detail": "JWT signature has expired"}

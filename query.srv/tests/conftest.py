@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from weatherapp.jwtauth import JWTAuthenticator, UserInfo
 
 from weatherapp_query.models import Weather
 from weatherapp_query.settings import settings
@@ -28,6 +29,24 @@ async def client(app):
         base_url="http://test/query/api/v1",
     ) as client:
         yield client
+
+
+@pytest.fixture
+def authenticator():
+    return JWTAuthenticator(secret_key=settings.secret_key)
+
+
+@pytest.fixture
+def jwt_token(authenticator):
+    token = authenticator.create_token_for_user(UserInfo(user_id=1))
+    return token
+
+
+@pytest.fixture
+def auth_headers(jwt_token):
+    return {
+        "Authorization": f"Bearer {jwt_token.token_access}",
+    }
 
 
 @pytest_asyncio.fixture

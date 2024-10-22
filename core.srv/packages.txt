@@ -5,7 +5,6 @@ django-ninja
 ipython
 psycopg[binary]
 pydantic[email]
-PyJWT
 pytest
 pytest-asyncio
 pytest-django

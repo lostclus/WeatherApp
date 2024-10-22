@@ -8,7 +8,7 @@ from weatherapp_query.storage.weather import add_weather
 
 
 @pytest.mark.asyncio
-async def test_weather(client, clickhouse_client, weather_object):
+async def test_weather(client, auth_headers, clickhouse_client, weather_object):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
@@ -17,7 +17,7 @@ async def test_weather(client, clickhouse_client, weather_object):
         "end_date": "2024-01-01",
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -57,7 +57,9 @@ async def test_weather(client, clickhouse_client, weather_object):
 
 
 @pytest.mark.asyncio
-async def test_weather_timezone(client, clickhouse_client, weather_object):
+async def test_weather_timezone(
+    client, auth_headers, clickhouse_client, weather_object
+):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
@@ -67,7 +69,7 @@ async def test_weather_timezone(client, clickhouse_client, weather_object):
         "timezone": "Europe/Kyiv",
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -76,7 +78,9 @@ async def test_weather_timezone(client, clickhouse_client, weather_object):
 
 @pytest.mark.parametrize("tz_name", ["UTC", "Europe/Kyiv"])
 @pytest.mark.asyncio
-async def test_weather_date_filter(tz_name, client, clickhouse_client, weather_object):
+async def test_weather_date_filter(
+    tz_name, client, auth_headers, clickhouse_client, weather_object
+):
     def gen_houry_timestamps(start, end):
         result = []
         ts = start
@@ -103,7 +107,7 @@ async def test_weather_date_filter(tz_name, client, clickhouse_client, weather_o
         "timezone": tz_name,
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -118,7 +122,9 @@ async def test_weather_date_filter(tz_name, client, clickhouse_client, weather_o
 
 @pytest.mark.parametrize("field", list(WeatherDataField))
 @pytest.mark.asyncio
-async def test_weather_fields(field, client, clickhouse_client, weather_object):
+async def test_weather_fields(
+    field, client, auth_headers, clickhouse_client, weather_object
+):
     await add_weather(clickhouse_client, weather_object)
 
     request_data = {
@@ -128,7 +134,7 @@ async def test_weather_fields(field, client, clickhouse_client, weather_object):
         "fields": [field],
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -150,7 +156,7 @@ async def test_weather_fields(field, client, clickhouse_client, weather_object):
 )
 @pytest.mark.asyncio
 async def test_weather_temperature_unit(
-    unit, expect, client, clickhouse_client, weather_object
+    unit, expect, client, auth_headers, clickhouse_client, weather_object
 ):
     await add_weather(clickhouse_client, weather_object)
 
@@ -162,7 +168,7 @@ async def test_weather_temperature_unit(
         "temperature_unit": str(unit),
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -179,7 +185,7 @@ async def test_weather_temperature_unit(
 )
 @pytest.mark.asyncio
 async def test_weather_wind_speed_unit(
-    unit, expect, client, clickhouse_client, weather_object
+    unit, expect, client, auth_headers, clickhouse_client, weather_object
 ):
     await add_weather(clickhouse_client, weather_object)
 
@@ -191,7 +197,7 @@ async def test_weather_wind_speed_unit(
         "wind_speed_unit": str(unit),
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
@@ -207,7 +213,7 @@ async def test_weather_wind_speed_unit(
 )
 @pytest.mark.asyncio
 async def test_weather_precipitation_unit(
-    unit, expect, client, clickhouse_client, weather_object
+    unit, expect, client, auth_headers, clickhouse_client, weather_object
 ):
     await add_weather(clickhouse_client, weather_object)
 
@@ -219,8 +225,36 @@ async def test_weather_precipitation_unit(
         "precipitation_unit": str(unit),
     }
 
-    response = await client.post("/weather", json=request_data)
+    response = await client.post("/weather", json=request_data, headers=auth_headers)
     assert response.status_code == 200, response.content
     response_data = response.json()
 
     assert response_data[0]["precipitation"] == expect
+
+
+@pytest.mark.asyncio
+async def test_weather_unauthenticated(client):
+    request_data = {
+        "location_ids": [1],
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "fields": ["temperature_2m"],
+    }
+    response = await client.post("/weather", json=request_data)
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_weather_invalid_token(client):
+    request_data = {
+        "location_ids": [1],
+        "start_date": "2024-01-01",
+        "end_date": "2024-01-01",
+        "fields": ["temperature_2m"],
+    }
+    response = await client.post(
+        "/weather",
+        json=request_data,
+        headers={"Authorization": "Bearer invalid"},
+    )
+    assert response.status_code == 400

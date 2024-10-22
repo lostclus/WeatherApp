@@ -107,6 +107,7 @@ services:
       DB_USERNAME: "postgres"
       DEBUG: ${DEBUG:-1}
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      SECRET_KEY: ${SECRET_KEY:-security_key}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
       UVICORN_HOST: "0.0.0.0"
@@ -197,6 +198,7 @@ services:
       CLICKHOUSE_DATABASE: weatherapp_query
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: ""
+      SECRET_KEY: ${SECRET_KEY:-security_key}
       SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-}
       UVICORN_HOST: "0.0.0.0"
