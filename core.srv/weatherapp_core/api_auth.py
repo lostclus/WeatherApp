@@ -1,9 +1,4 @@
-from django.http import HttpRequest
+from weatherapp_core.jwtauth.auth import AsyncJWTAuth, JWTAuth
 
-
-async def auth(request: HttpRequest) -> bool:
-    return True
-
-
-async def async_auth(request: HttpRequest) -> bool:
-    return True
+auth = JWTAuth()
+async_auth = AsyncJWTAuth()

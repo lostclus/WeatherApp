@@ -1,6 +1,8 @@
 import logging
+from typing import Any
 
 from django.http import HttpRequest
+from ninja.security import HttpBearer
 
 from weatherapp_core.users.models import User
 
@@ -10,7 +12,7 @@ from .schema import TokenPayload, TokenType
 log = logging.getLogger(__name__)
 
 
-def get_key(request: HttpRequest) -> str | None:
+def get_token(request: HttpRequest) -> str | None:
     value = request.headers.get("Authorization")
     if not value:
         return None
@@ -19,13 +21,12 @@ def get_key(request: HttpRequest) -> str | None:
     return value
 
 
-def get_token_payload(request: HttpRequest) -> TokenPayload | None:
-    key = get_key(request)
-    if not key:
+def get_token_payload(token: str) -> TokenPayload | None:
+    if not token:
         log.debug("No authentication key")
         return None
 
-    payload = decode_token(key)
+    payload = decode_token(token)
     if not payload:
         log.debug("Key verification failed")
         return None
@@ -37,8 +38,13 @@ def get_token_payload(request: HttpRequest) -> TokenPayload | None:
     return payload
 
 
-def auth_request(request: HttpRequest) -> User | None:
-    payload = get_token_payload(request)
+def auth_request(request: HttpRequest, token: str | None = None) -> User | None:
+    if token is None:
+        token = get_token(request)
+    if token is None:
+        return None
+
+    payload = get_token_payload(token)
     if not payload:
         return None
 
@@ -51,8 +57,15 @@ def auth_request(request: HttpRequest) -> User | None:
     return user
 
 
-async def async_auth_request(request: HttpRequest) -> User | None:
-    payload = get_token_payload(request)
+async def async_auth_request(
+    request: HttpRequest, token: str | None = None
+) -> User | None:
+    if token is None:
+        token = get_token(request)
+    if token is None:
+        return None
+
+    payload = get_token_payload(token)
     if not payload:
         return None
 
@@ -63,3 +76,17 @@ async def async_auth_request(request: HttpRequest) -> User | None:
 
     request.user = user
     return user
+
+
+class JWTAuth(HttpBearer):
+    def authenticate(self, request: HttpRequest, token: str) -> Any:
+        return auth_request(request, token=token)
+
+
+class AsyncJWTAuth(HttpBearer):
+    def authenticate(self, request: HttpRequest, token: str) -> Any:
+        return token
+
+    async def __call__(self, request: HttpRequest) -> Any:
+        token = super().__call__(request)
+        return await async_auth_request(request, token=token)
