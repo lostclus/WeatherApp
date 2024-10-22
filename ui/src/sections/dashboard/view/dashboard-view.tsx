@@ -41,17 +41,19 @@ export function DashboardView() {
   }, [user]);
 
   useEffect(() => {
-    getCurrentWeather(
-      {
-	locationIds: locations.map((loc) => loc.id),
-	fields: ["temperature_2m", "weather_code"],
-	timezone: settings.timezone,
-	temperatureUnit: settings.temperatureUnit,
-	windSpeedUnit: settings.windSpeedUnit,
-	precipitationUnit: settings.precipitationUnit,
-      },
-      (newWeather: Weather[]) => setCurrentWeather(newWeather)
-    );
+    if (settings !== nullUser) {
+      getCurrentWeather(
+	{
+	  locationIds: locations.map((loc) => loc.id),
+	  fields: ["temperature_2m", "weather_code"],
+	  timezone: settings.timezone,
+	  temperatureUnit: settings.temperatureUnit,
+	  windSpeedUnit: settings.windSpeedUnit,
+	  precipitationUnit: settings.precipitationUnit,
+	},
+	(newWeather: Weather[]) => setCurrentWeather(newWeather)
+      );
+    }
   }, [locations, settings]);
 
   const locationsMap = Object.fromEntries(locations.map((loc) => [loc.id, loc]));
