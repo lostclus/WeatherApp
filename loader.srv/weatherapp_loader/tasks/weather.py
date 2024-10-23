@@ -11,6 +11,7 @@ else:
 from weatherapp.protocol.bus.serializers import namedtuple_to_json_serializer
 
 from .. import settings
+from ..date_range import DateRange
 from ..service.open_meteo import get_weather
 from ..storage.locations import get_locations
 from ..types import LocationRecord, OpenMeteoDataset
@@ -68,6 +69,9 @@ async def stream_weather_task(
     start_date = start_date or (today - timedelta(days=3))
     end_date = end_date or today
 
+    date_range = DateRange(start_date, end_date)
+    date_range_chunks = date_range.split_to_chunks(timedelta(days=92))
+
     locations_d = {location.id: location for location in await get_locations()}
     locations: list[LocationRecord]
 
@@ -81,13 +85,14 @@ async def stream_weather_task(
     jobs_count = 0
     async with get_arq_pool() as arq_pool:
         for location in locations:
-            await arq_pool.enqueue_job(
-                func_path(stream_weather_location_task),
-                start_date=start_date,
-                end_date=end_date,
-                location=location,
-                dataset=dataset,
-            )
-            jobs_count += 1
+            for d_range in date_range_chunks:
+                await arq_pool.enqueue_job(
+                    func_path(stream_weather_location_task),
+                    start_date=d_range.start_date,
+                    end_date=d_range.end_date,
+                    location=location,
+                    dataset=dataset,
+                )
+                jobs_count += 1
 
     return jobs_count
