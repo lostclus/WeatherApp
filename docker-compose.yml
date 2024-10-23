@@ -125,7 +125,15 @@ services:
       postgres:
         condition: service_healthy
     ports: []
-    command: celery -A weatherapp_core.celery worker -B -c 1
+    command: celery -A weatherapp_core.celery worker -c 1
+
+  core-beat:
+    <<: *core-config
+    depends_on:
+      redis:
+        condition: service_started
+    ports: []
+    command: celery -A weatherapp_core.celery beat
 
   core-migrate:
     <<: *core-config

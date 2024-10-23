@@ -15,6 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import sentry_sdk
+from celery.schedules import crontab
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -144,6 +145,12 @@ JWT_ACCESS_TOKEN_LIFETIME = timedelta(minutes=15)
 JWT_REFRESH_TOKEN_LIFETIME = timedelta(hours=3)
 
 CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379")
+CELERY_BEAT_SCHEDULE = {
+    "stream-to-kafka": {
+        "task": "kafkastreamer.tasks.refresh",
+        "schedule": crontab(minute="0"),
+    },
+}
 
 KAFKA_STREAMER = {
     "DEFAULT_SOURCE": "core",
@@ -170,12 +177,12 @@ LOGGING = {
             "formatter": "file",
         },
     },
-    "root": {
-        "handlers": _logging_handlers,
-        "level": "WARNING",
-    },
     "loggers": {
         "celery": {
+            "level": "INFO",
+            "handlers": _logging_handlers,
+        },
+        "django": {
             "level": "INFO",
             "handlers": _logging_handlers,
         },

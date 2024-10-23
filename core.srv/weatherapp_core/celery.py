@@ -16,7 +16,5 @@ def setup_logging_handler(**kwargs: Any) -> None:
 
 
 app = Celery("weatherapp_core")
-
 app.config_from_object("django.conf:settings", namespace="CELERY")
-
 app.autodiscover_tasks()
