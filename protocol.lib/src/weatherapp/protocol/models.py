@@ -1,9 +1,12 @@
+import itertools
 from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from pydantic_extra_types.timezone_name import TimeZoneName
+
+from .types import AggregateFunction
 
 
 class User(BaseModel):
@@ -165,4 +168,13 @@ class Weather(WeatherData):
 # use this
 WeatherDataField = StrEnum(  # type: ignore
     "WeatherDataField", [(field, field) for field in WeatherData.model_fields.keys()]
+)
+
+WeatherDataAggregatedField = StrEnum(  # type: ignore
+    "WeatherDataAggregatedField",
+    [
+        (f"{field}_{func}", f"{field}_{func}")
+        for field, func in itertools.product(WeatherDataField, AggregateFunction)
+        if str(field) != "weather_code"
+    ],
 )

@@ -34,3 +34,18 @@ class DateFormat(StrEnum):
 class TimeFormat(StrEnum):
     H24 = "HH:mm"
     H12 = "hh:MM a"
+
+
+class AggregateFunction(StrEnum):
+    MIN = "min"
+    MAX = "max"
+    AVG = "avg"
+    MEDIAN = "median"
+    DIFF_MAX_MIN = "diff_max_min"
+
+
+class AggregateGroup(StrEnum):
+    DAY = "day"
+    WEEK = "week"
+    MONTH = "month"
+    YEAR = "year"

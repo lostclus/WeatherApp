@@ -17,4 +17,6 @@ export type ServerConstants = {
   dateFormats: ServerChoicesList,
   timeFormats: ServerChoicesList,
   weatherFields: ServerChoicesList,
+  aggregateGroups: ServerChoicesList,
+  aggregateFunctions: ServerChoicesList,
 };

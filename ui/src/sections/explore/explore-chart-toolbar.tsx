@@ -1,5 +1,6 @@
 import type { User } from 'src/client/users';
 import type { Location_ } from 'src/client/locations'
+import type { ServerChoicesList } from 'src/client/types'
 import type { SelectChangeEvent } from '@mui/material/Select';
 
 import Stack from '@mui/material/Stack';
@@ -24,9 +25,15 @@ type ExploreChartToolbarProps = {
   onStartDateChange: (event: any) => void;
   endDate: any,
   onEndDateChange: (event: any) => void;
+  aggGroup: string,
+  aggGroupChoices: ServerChoicesList,
+  onAggGroupChange: (event: SelectChangeEvent) => void,
   weatherFields: string[],
-  weatherFieldsChoices: { [key: string]: string },
+  weatherFieldsChoices: ServerChoicesList,
   onWeatherFieldsChange: (event: SelectChangeEvent<string[]>) => void,
+  aggFunctions: string[],
+  aggFunctionsChoices: ServerChoicesList,
+  onAggFunctionsChange: (event: SelectChangeEvent<string[]>) => void,
   settings: User,
 };
 
@@ -39,9 +46,15 @@ export function ExploreChartToolbar(
     onStartDateChange,
     endDate,
     onEndDateChange,
+    aggGroup,
+    aggGroupChoices,
+    onAggGroupChange,
     weatherFields,
     weatherFieldsChoices,
     onWeatherFieldsChange,
+    aggFunctions,
+    aggFunctionsChoices,
+    onAggFunctionsChange,
     settings,
   }: ExploreChartToolbarProps
 ) {
@@ -55,7 +68,7 @@ export function ExploreChartToolbar(
       }}
     >
       <Stack direction="row" spacing={2}>
-	<FormControl sx={{ minWidth: 250 }}>
+	<FormControl sx={{ minWidth: 200 }}>
 	  <InputLabel id="location-label">Location</InputLabel>
 	  <Select
 	    labelId="location-label"
@@ -84,6 +97,20 @@ export function ExploreChartToolbar(
 	    value={endDate}
 	  />
 	</FormControl>
+	<FormControl sx={{ minWidth: 100 }}>
+	  <InputLabel id="agg-group-label">Group</InputLabel>
+	  <Select
+	    labelId="agg-group-label"
+	    label="Group"
+	    value={aggGroup}
+	    onChange={onAggGroupChange}
+	  >
+	    <MenuItem value="">None</MenuItem>
+	    {Object.entries(aggGroupChoices).map(([value, label]) => (
+	      <MenuItem key={value} value={value}>{label}</MenuItem>
+	    ))}
+	  </Select>
+	</FormControl>
 	<FormControl>
 	  <InputLabel id="weather-fields-label">Parameters</InputLabel>
 	  <Select
@@ -100,6 +127,29 @@ export function ExploreChartToolbar(
 		([value, label]) => (
 		  <MenuItem key={value} value={value}>
 		    <Checkbox checked={weatherFields.includes(value)} />
+		    <ListItemText primary={label} />
+		  </MenuItem>
+		)
+	      )
+	    }
+	  </Select>
+	</FormControl>
+	<FormControl sx={{ display: (aggGroup) ? '' : 'none' }}>
+	  <InputLabel id="agg-functions-label">Aggregate</InputLabel>
+	  <Select
+	    labelId="agg-functions-label"
+	    id="agg-functions"
+	    multiple
+	    value={aggFunctions}
+	    onChange={onAggFunctionsChange}
+	    input={<OutlinedInput label="Aggregate" />}
+	    renderValue={(selected) => selected.join(', ')}
+	  >
+	    {
+	      Object.entries(aggFunctionsChoices).map(
+		([value, label]) => (
+		  <MenuItem key={value} value={value}>
+		    <Checkbox checked={aggFunctions.includes(value)} />
 		    <ListItemText primary={label} />
 		  </MenuItem>
 		)

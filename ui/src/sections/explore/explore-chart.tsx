@@ -1,5 +1,6 @@
 import type { User } from 'src/client/users';
 import type { Weather } from 'src/client/weather';
+import type { WeatherAggregated } from 'src/client/weather-aggregated';
 
 import dayjs from 'dayjs';
 
@@ -8,17 +9,17 @@ import { LineChart } from '@mui/x-charts/LineChart';
 // ----------------------------------------------------------------------
 
 type Props =  {
-  dataset: Weather[],
-  weatherFields: string[],
-  weatherFieldsChoices: { [key: string]: string},
+  dataset: Weather[] | WeatherAggregated[],
+  fields: string[],
+  fieldsChoices: { [key: string]: string},
   settings: User,
 };
 
 export function ExploreChart(
   {
     dataset,
-    weatherFields,
-    weatherFieldsChoices,
+    fields,
+    fieldsChoices,
     settings
   }: Props
 ) {
@@ -34,9 +35,9 @@ export function ExploreChart(
 	  },
 	}
       ]}
-      series={weatherFields.map((key) => ({
+      series={fields.map((key) => ({
         dataKey: key,
-        label: weatherFieldsChoices[key],
+        label: fieldsChoices[key],
 	showMark: false,
       }))}
       dataset={dataset}

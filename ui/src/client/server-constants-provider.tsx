@@ -15,6 +15,8 @@ const nullServerConstants: ServerConstants = {
   dateFormats: {},
   timeFormats: {},
   weatherFields: {},
+  aggregateGroups: {},
+  aggregateFunctions: {},
 };
 
 const ServerConstantsContext = createContext<ServerConstants>(nullServerConstants);
@@ -43,6 +45,8 @@ export function ServerConstantsProvider({ children }: Props) {
 	    date_formats: dateFormats,
 	    time_formats: timeFormats,
 	    weather_fields: weatherFields,
+	    aggregate_groups: aggregateGroups,
+	    aggregate_functions: aggregateFunctions,
 	  } = response.data;
 	  const newServerConstants = {
 	    timezones,
@@ -52,6 +56,8 @@ export function ServerConstantsProvider({ children }: Props) {
 	    dateFormats,
 	    timeFormats,
 	    weatherFields,
+	    aggregateGroups,
+	    aggregateFunctions,
 	  };
 	  setServerConstants(newServerConstants);
 	}

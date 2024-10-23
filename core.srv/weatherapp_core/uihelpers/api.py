@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from weatherapp.protocol import WeatherData
 
 from weatherapp_core.constants import (
+    AggregateFunctionChoices,
+    AggregateGroupChoices,
     DateFormatChoices,
     PrecipitationUnitChoices,
     TemperatureUnitChoices,
@@ -35,4 +37,6 @@ async def constants(request: HttpRequest) -> ConstantsSchema:
         date_formats=from_choices(DateFormatChoices),
         time_formats=from_choices(TimeFormatChoices),
         weather_fields=from_pydantic_model(WeatherData),
+        aggregate_groups=from_choices(AggregateGroupChoices),
+        aggregate_functions=from_choices(AggregateFunctionChoices),
     )

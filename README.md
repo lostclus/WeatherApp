@@ -62,8 +62,8 @@ Development plan:
 - [x] Implement weather API in `query` service
 - [x] Implement weather explore page in UI
 - [x] Implement weather dashboard UI
-- [ ] Implement weather aggregation API
-- [ ] Implement weather aggregation UI
+- [x] Implement weather aggregation API
+- [x] Implement weather aggregation UI
 
 ## Local Deploy
 

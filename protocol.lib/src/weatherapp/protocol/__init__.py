@@ -1,5 +1,14 @@
-from .models import Location, User, Weather, WeatherData, WeatherDataField
+from .models import (
+    Location,
+    User,
+    Weather,
+    WeatherData,
+    WeatherDataAggregatedField,
+    WeatherDataField,
+)
 from .types import (
+    AggregateFunction,
+    AggregateGroup,
     DateFormat,
     PrecipitationUnit,
     TemperatureUnit,
@@ -8,6 +17,8 @@ from .types import (
 )
 
 __all__ = [
+    "AggregateFunction",
+    "AggregateGroup",
     "DateFormat",
     "Location",
     "PrecipitationUnit",
@@ -16,6 +27,7 @@ __all__ = [
     "User",
     "Weather",
     "WeatherData",
+    "WeatherDataAggregatedField",
     "WeatherDataField",
     "WindSpeedUnit",
 ]

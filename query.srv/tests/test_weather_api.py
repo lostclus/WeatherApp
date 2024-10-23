@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
 
 import pytest
-from weatherapp.protocol import PrecipitationUnit, TemperatureUnit, WindSpeedUnit
+from weatherapp.protocol import (
+    PrecipitationUnit,
+    TemperatureUnit,
+    WeatherDataField,
+    WindSpeedUnit,
+)
 
-from weatherapp_query.models import WeatherDataField
 from weatherapp_query.storage.weather import add_weather
 
 

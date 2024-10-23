@@ -9,3 +9,5 @@ class ConstantsSchema(Schema):
     date_formats: dict[str, str]
     time_formats: dict[str, str]
     weather_fields: dict[str, str]
+    aggregate_groups: dict[str, str]
+    aggregate_functions: dict[str, str]
