@@ -3,7 +3,6 @@ import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 
@@ -54,11 +53,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
           }}
           sx={header?.sx}
           slots={{
-            topArea: (
-              <Alert severity="info" sx={{ display: 'none', borderRadius: 0 }}>
-                This is an info Alert.
-              </Alert>
-            ),
+            topArea: "",
             leftArea: (
               <>
                 <MenuButton
