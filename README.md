@@ -8,7 +8,7 @@ Features:
 - User settings form
 - CRUD on user locations
 - Query weather data on selected location
-- Under the hood it will get weather data from Open-Meteo API and store it in the local database
+- Under the hood it loads weather data from Open-Meteo API and store it in the local database
 
 Tech stack on backend:
 - Python
@@ -37,7 +37,7 @@ database and REST API. Stream data to Kafka.
 
 `loader`
 : Data loader service. Stack: ARQ, Redis, Kafka. Provides asynchronous periodic
-tasks to load weather data from public API and stream data to Kafka.
+tasks to load weather data from public API and stream it to Kafka.
 
 `query`
 : Weather data query service. Stack: FastAPI, Kafka, ClickHouse. Provides
@@ -76,6 +76,8 @@ First install Docker Compose, then type:
     docker compose run --rm core-stream
     docker compose run --rm loader-stream
 
+Available URLs:
+
 <http://localhost:3000>
 : Application user interface
 
@@ -88,8 +90,14 @@ First install Docker Compose, then type:
 <http://localhost:3000/query/api/v1/docs>
 : query API documentation
 
-Go to <http://localhost:3000> and create new user (sign-up). The first user
-created will have superuser privileges and can login to the admin area.
+## Usage
+
+Go to UI <http://localhost:3000> and create new user (sign-up). Type email and
+password. No email confirmation is required. The first user created will have
+superuser privileges and can login to the admin area. Then login (sign-in) and
+use left side menu to navigate over site.
+
+## Other Console Commands
 
 Run linters:
 
@@ -100,3 +108,7 @@ Run tests:
     docker compose run --rm core-test
     docker compose run --rm loader-test
     docker compose run --rm query-test
+
+Load more historical data:
+
+    docker compose run --rm loader-stream python -m weatherapp_loader.tasks.run stream-weather -l 1 2022-01-01
