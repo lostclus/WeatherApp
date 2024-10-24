@@ -49,7 +49,7 @@ async def create_location(request: HttpRequest, payload: LocationInSchema) -> Lo
 async def list_locations(request: HttpRequest) -> list[Location]:
     user = request.user
     assert isinstance(user, User)
-    queryset = _user_locations(user).select_related("user")
+    queryset = _user_locations(user).select_related("user").order_by("name")
     return [obj async for obj in queryset]
 
 
@@ -58,7 +58,9 @@ async def list_my_locations(request: HttpRequest) -> list[Location]:
     user = request.user
     assert isinstance(user, User)
 
-    queryset = _user_locations(user, only_my=True).select_related("user")
+    queryset = (
+        _user_locations(user, only_my=True).select_related("user").order_by("name")
+    )
     return [obj async for obj in queryset]
 
 

@@ -41,7 +41,7 @@ export function DashboardView() {
   }, [user]);
 
   useEffect(() => {
-    if (settings !== nullUser) {
+    if (settings !== nullUser && locations.length > 0) {
       getCurrentWeather(
 	{
 	  locationIds: locations.map((loc) => loc.id),
@@ -56,7 +56,14 @@ export function DashboardView() {
     }
   }, [locations, settings]);
 
-  const locationsMap = Object.fromEntries(locations.map((loc) => [loc.id, loc]));
+  const weatherMap = Object.fromEntries(
+    currentWeather.map(weather => [weather.location_id, weather])
+  );
+  const locationWeather = locations.map(
+    loc => [loc, weatherMap[loc.id]]
+  ).filter(
+    ([loc, weather]) => weather !== undefined
+  )
 
   return (
     <DashboardContent maxWidth="xl">
@@ -65,10 +72,10 @@ export function DashboardView() {
       </Typography>
 
       <Grid container spacing={3}>
-	{currentWeather.map((weather: Weather) => (
-	  <Grid key={weather.location_id} xs={12} sm={6} md={3}>
+	{locationWeather.map(([loc, weather]) => (
+	  <Grid key={loc.id} xs={12} sm={6} md={3}>
 	    <WeatherWidgetSummary
-	      loc={locationsMap[weather.location_id]}
+	      loc={loc}
 	      weather={weather}
 	      settings={settings}
 	    />
