@@ -111,4 +111,4 @@ Run tests:
 
 Load more historical data:
 
-    docker compose run --rm loader-stream python -m weatherapp_loader.tasks.run stream-weather -l 1 2022-01-01
+    docker compose run --rm loader-stream python -m weatherapp_loader.tasks.run stream-weather 2022-01-01
