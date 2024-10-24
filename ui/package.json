@@ -2,7 +2,7 @@
   "name": "weatherapp_ui",
   "author": "Kostiantyn Korikov",
   "licence": "MIT",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": false,
   "type": "module",
   "scripts": {

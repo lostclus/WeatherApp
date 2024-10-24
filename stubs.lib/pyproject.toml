@@ -3,7 +3,7 @@ name = "weatherapp.stubs"
 authors = [
     {name = "Kostiantyn Korikov", email = "lostclus@gmail.com"},
 ]
-version = "0.0.0"
+version = "1.0.0"
 description = "WeatherApp stubs for type checking library"
 
 dependencies = []
