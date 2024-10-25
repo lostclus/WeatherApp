@@ -17,6 +17,7 @@ services:
       - ./docker-compose/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     depends_on:
       - core
+      - query
       - ui
 
   redis:
