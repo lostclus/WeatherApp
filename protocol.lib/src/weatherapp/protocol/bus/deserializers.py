@@ -23,8 +23,10 @@ def json_to_namedtuple_deserializer(
     enumerate_record_class: type[EnumerateRecordT] | None = None,
     eos_record_class: type[EOSRecordT] | None = None,
     encoding: str = ENCODING,
-) -> Callable[[bytes], RecordT | DeleteRecordT | EnumerateRecordT]:
-    def deserializer(value: bytes) -> RecordT | DeleteRecordT | EnumerateRecordT:
+) -> Callable[[bytes], RecordT | DeleteRecordT | EnumerateRecordT | EOSRecordT]:
+    def deserializer(
+        value: bytes,
+    ) -> RecordT | DeleteRecordT | EnumerateRecordT | EOSRecordT:
         payload = json.loads(value.decode(encoding))
         ev_type = EventType(payload["_type"])
 
