@@ -3,6 +3,7 @@ import types
 import typing
 from collections.abc import AsyncGenerator
 from datetime import UTC, date, datetime
+from json import JSONDecodeError
 from urllib.parse import urlencode
 
 import aiohttp
@@ -46,7 +47,16 @@ async def get_weather(
         }
         log.debug(f"Do request: {url}?{urlencode(params)}")
         async with session.get(url=url, params=params) as resp:
-            resp_data = await resp.json()
+            if not resp.ok:
+                text = await resp.text()
+                log.error(f"OpenMeteo API error: status {resp.status}: {text}")
+                resp.raise_for_status()
+            try:
+                resp_data = await resp.json()
+            except JSONDecodeError as error:
+                text = await resp.text()
+                log.error(f"OpenMeteo API JSON error: {error}: {text}")
+                raise
 
     hourly = resp_data["hourly"]
     ev_time = now or datetime.now(UTC).replace(microsecond=0)
