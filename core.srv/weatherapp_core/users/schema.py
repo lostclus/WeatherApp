@@ -10,9 +10,9 @@ class UserCreateSchema(ModelSchema):
     email: EmailStr
     password: str
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = ["email"]
+        fields = ["email"]
 
     @field_validator("password")
     @classmethod
@@ -28,9 +28,9 @@ class UserCreateSchema(ModelSchema):
 class UserUpdateSchema(ModelSchema):
     default_location_id: int | None = None
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = [
+        fields = [
             "timezone",
             "temperature_unit",
             "wind_speed_unit",
@@ -44,9 +44,9 @@ class UserUpdateSchema(ModelSchema):
 class UserOutSchema(ModelSchema):
     default_location_id: int | None
 
-    class Config:
+    class Meta:
         model = User
-        model_fields = [
+        fields = [
             "id",
             "email",
             "timezone",

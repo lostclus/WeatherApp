@@ -12,9 +12,9 @@ class LocationInSchema(ModelSchema):
     longitude: Decimal = Field(ge=-180, le=180)
     is_default: bool = False
 
-    class Config:
+    class Meta:
         model = Location
-        model_fields = [
+        fields = [
             "name",
             "latitude",
             "longitude",
@@ -25,9 +25,9 @@ class LocationInSchema(ModelSchema):
 class LocationOutSchema(ModelSchema):
     is_default: bool
 
-    class Config:
+    class Meta:
         model = Location
-        model_fields = [
+        fields = [
             "id",
             "name",
             "latitude",

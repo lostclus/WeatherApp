@@ -59,3 +59,4 @@ django_settings_module = "weatherapp_core.settings"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "weatherapp_core.settings"
+asyncio_default_fixture_loop_scope = "function"
