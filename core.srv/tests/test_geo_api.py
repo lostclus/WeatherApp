@@ -171,13 +171,13 @@ def test_location_get_unauthorized(client, user, auth_headers, location, other_u
     assert response.status_code == 404, response.content
 
 
-def test_location_list(client, user, auth_headers, location):
+def test_location_list(client, user, auth_headers, location, system_location):
     response = client.get("/core/api/v1/locations/", headers=auth_headers)
 
     assert response.status_code == 200, response.content
     response_data = response.json()
 
-    assert [data for data in response_data if data["user"] == user.pk] == [
+    assert response_data == [
         {
             "id": location.pk,
             "name": "Null island",
@@ -187,7 +187,45 @@ def test_location_list(client, user, auth_headers, location):
             "is_active": True,
             "user": user.pk,
         },
+        {
+            "id": system_location.pk,
+            "name": "Some place",
+            "latitude": "1.23000",
+            "longitude": "4.56000",
+            "is_default": False,
+            "is_active": True,
+            "user": None,
+        },
     ]
+
+
+def test_location_list_is_active(client, user, auth_headers, location, system_location):
+    location.is_active = False
+    location.save()
+    system_location.is_active = True
+    system_location.save()
+
+    response = client.get(
+        "/core/api/v1/locations/",
+        {"is_active": True},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert [data["id"] for data in response_data] == [system_location.pk]
+
+    response = client.get(
+        "/core/api/v1/locations/",
+        {"is_active": False},
+        headers=auth_headers,
+    )
+
+    assert response.status_code == 200, response.content
+    response_data = response.json()
+
+    assert [data["id"] for data in response_data] == [location.pk]
 
 
 def test_location_my_list(client, user, auth_headers, location):

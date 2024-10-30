@@ -38,8 +38,8 @@ function decodeLocation(serverLoc: LocationServerProps): Location_ {
   return loc;
 }
 
-export function getLocations(onSuccess: (newLocations: Location_[]) => void):void {
-  axios.get(`${CONFIG.api.coreURL}/v1/locations/`)
+export function getLocations(onSuccess: (newLocations: Location_[]) => void): void {
+  axios.get(`${CONFIG.api.coreURL}/v1/locations/?is_active=true`)
   .then(
     (response) => {
       const newLocations = response.data.map(decodeLocation);
@@ -48,7 +48,7 @@ export function getLocations(onSuccess: (newLocations: Location_[]) => void):voi
   );
 }
 
-export function getMyLocations(onSuccess: (newLocations: Location_[]) => void):void {
+export function getMyLocations(onSuccess: (newLocations: Location_[]) => void): void {
   axios.get(`${CONFIG.api.coreURL}/v1/locations/my`)
   .then(
     (response) => {

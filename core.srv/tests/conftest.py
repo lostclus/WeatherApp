@@ -55,3 +55,14 @@ async def location(django_db_blocker, user):
             user=user,
         )
         return location
+
+
+@pytest_asyncio.fixture
+async def system_location(django_db_blocker):
+    with django_db_blocker.unblock():
+        location = await Location.objects.acreate(
+            name="Some place",
+            latitude=Decimal("1.23"),
+            longitude=Decimal("4.56"),
+        )
+        return location

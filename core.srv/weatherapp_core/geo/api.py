@@ -46,10 +46,14 @@ async def create_location(request: HttpRequest, payload: LocationInSchema) -> Lo
 
 
 @locations_router.get("/", response=list[LocationOutSchema])
-async def list_locations(request: HttpRequest) -> list[Location]:
+async def list_locations(
+    request: HttpRequest, is_active: bool | None = None
+) -> list[Location]:
     user = request.user
     assert isinstance(user, User)
     queryset = _user_locations(user).select_related("user").order_by("name")
+    if is_active is not None:
+        queryset = queryset.filter(is_active=is_active)
     return [obj async for obj in queryset]
 
 
