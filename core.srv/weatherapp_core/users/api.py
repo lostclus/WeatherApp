@@ -29,7 +29,8 @@ async def create_user(request: HttpRequest, payload: UserCreateSchema) -> User:
     user.set_password(payload.password)
     await user.asave()
 
-    # Give admin rights to the first registered user
+    # HACK! Don't use the next block in production!
+    # Give admin rights to the first registered user.
     if user.pk == 1:
         user.is_superuser = True
         user.is_staff = True
