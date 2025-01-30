@@ -1,5 +1,6 @@
 from datetime import UTC, date, datetime, timedelta
 from typing import TypeVar
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Response
 from pydantic import BaseModel, TypeAdapter
@@ -12,7 +13,6 @@ from weatherapp.protocol import (
     WeatherDataField,
     WindSpeedUnit,
 )
-from zoneinfo import ZoneInfo
 
 from ..models import Weather, WeatherAggregated
 from ..storage.weather import get_aggregated_weather, get_weather
